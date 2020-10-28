@@ -11,7 +11,7 @@ import time
 import datetime
 import json
 import configparser
-# from ServerUtility import getRandomAlphanumericString, sendToAllClient
+from ServerUtility import getRandomAlphanumericString, sendToAllClients
 # import ServerConfigs
 
 # variables
@@ -22,7 +22,6 @@ PORT = int(ServerConfigs['GeneralSettings']['Port'])
 addr = (HOST, PORT)
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-print(addr)
 serverSocket.bind(addr)
 serverSocket.listen(10)
 clientSockets = []
@@ -32,42 +31,53 @@ channels = {}
 
 def handler():
     global clientSockets
+    sendDataFlag = False
     while True:
         # iterate through all clients
         for clientSocket in clientSockets:
             try:
+                roomID = None
                 data = json.loads(clientSocket.recv(1024))
                 if data['action_id'] == 0:
                     # create room
                     roomID = getRandomAlphanumericString(6)
                     rooms[roomID] = {'members':[data['user_id']], 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
                     channels[roomID] = {data['user_id']:clientSocket}
+                    sendDataFlag = True
                     # clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
                 elif data['action_id'] == 1:
                     # join a room
                     if data['room_id'] in rooms:
-                        rooms[data['room_id']]['members'].append(data['user_id'])
+                        roomID = data['room_id']
+                        rooms[roomID]['members'].append(data['user_id'])
                         clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
+                        sendDataFlag = True
                     else:
                         clientSocket.send(bytes("Sorry! Room doesn't exist"))
                 elif data['action_id'] == 2:
                     # play video
                     if data['room_id'] in rooms:
-                        rooms[data['room_id']]['paused'] = False
+                        roomID = data['room_id']
+                        rooms[roomID]['paused'] = False
                         # clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
+                        sendDataFlag = True
                     else:
                         clientSocket.send(bytes("Sorry! Room doesn't exist"))
 
                 elif data['action_id'] == 3:
                     # play video
                     if data['room_id'] in rooms:
-                        rooms[data['room_id']]['paused'] = True
+                        roomID = data['room_id']
+                        rooms[roomID]['paused'] = True
                         # clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
+                        sendDataFlag = True
                     else:
                         clientSocket.send(bytes("Sorry! Room doesn't exist"))
 
-                # sendToAllClients()
-
+                if(sendDataFlag):
+                    sendToAllClients(clientSockets, json.dumps({roomID:rooms[roomID]}))
+                    sendDataFlag = False
+                    
             except BlockingIOError:
                 pass
             except KeyboardInterrupt:
