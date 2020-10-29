@@ -11,12 +11,12 @@ import time
 import datetime
 import json
 import configparser
-from ServerUtility import getRandomAlphanumericString, sendToAllClients
+from server_utility import get_room_id, send_to_all_clients
 # import ServerConfigs
 
 # variables
 ServerConfigs = configparser.SafeConfigParser()
-ServerConfigs.read('configs.ini')
+ServerConfigs.read('/home/varungujarathi9/Personal/Projects/Local-Video-Party/server/configs.ini')
 HOST = ServerConfigs['GeneralSettings']['Host']
 PORT = int(ServerConfigs['GeneralSettings']['Port'])
 addr = (HOST, PORT)
@@ -36,23 +36,25 @@ def handler():
         for clientSocket in clientSockets:
             try:
                 roomID = None
+                sendDataFlag = False
                 data = json.loads(clientSocket.recv(1024))
                 if data['action_id'] == 0:
                     # create room
-                    roomID = getRandomAlphanumericString(6)
-                    rooms[roomID] = {'members':[data['user_id']], 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
-                    channels[roomID] = {data['user_id']:clientSocket}
-                    clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
-                    
+                    roomID = get_room_id(6)
+                    rooms[roomID] = {'members':[data['username']], 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
+                    channels[roomID] = {data['username']:clientSocket}
+                    clientSocket.send(bytes(json.dumps({'join':roomID, 'room':rooms[roomID]}), encoding='utf8'))
+
                 elif data['action_id'] == 1:
                     # join a room
                     if data['room_id'] in rooms:
                         roomID = data['room_id']
-                        rooms[roomID]['members'].append(data['user_id'])
-                        clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
+                        rooms[roomID]['members'].append(data['username'])
+                        # clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
                         sendDataFlag = True
                     else:
-                        clientSocket.send(bytes("Sorry! Room doesn't exist"))
+                        clientSocket.send(bytes(json.dumps({'error':"Sorry! Room doesn't exist"}), encoding='utf8'))
+
                 elif data['action_id'] == 2:
                     # play video
                     if data['room_id'] in rooms:
@@ -61,20 +63,21 @@ def handler():
                         # clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
                         sendDataFlag = True
                     else:
-                        clientSocket.send(bytes("Sorry! Room doesn't exist"))
+                        clientSocket.send(bytes(json.dumps({'error':"Sorry! Room doesn't exist"}), encoding='utf8'))
 
                 elif data['action_id'] == 3:
-                    # play video
+                    # pause video
                     if data['room_id'] in rooms:
                         roomID = data['room_id']
                         rooms[roomID]['paused'] = True
                         # clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
                         sendDataFlag = True
                     else:
-                        clientSocket.send(bytes("Sorry! Room doesn't exist"))
+                        clientSocket.send(bytes(json.dumps({'error':"Sorry! Room doesn't exist"}), encoding='utf8'))
 
                 if(sendDataFlag):
-                    sendToAllClients(clientSockets, json.dumps({roomID:rooms[roomID]}))
+                    
+                    send_to_all_clients(rooms[roomID]['members'], json.dumps({roomID:rooms[roomID]}))
                     sendDataFlag = False
 
             except BlockingIOError:
@@ -83,10 +86,13 @@ def handler():
                 for clientSocket in clientSockets:
                     clientSocket.close()
                 clientSockets.clear()
+                serverSocket.close()
             except json.decoder.JSONDecodeError:
                 clientSocket.close()
                 clientSockets.remove(clientSocket)
-    # TODO: close sockets after room closing
+                serverSocket.close()
+            except ConnectionResetError:
+                clientSocket.close()
 
 # start handler thread which syncs all clients
 
@@ -95,8 +101,9 @@ while True:
     try:
         # accpet new client and add client's socket to list
         clientSocket, clientAddr = serverSocket.accept()
-        clientSockets.append(clientSocket)
-        clientSocket.setblocking(0)
+        if clientSocket not in clientSockets:
+            clientSockets.append(clientSocket)
+            clientSocket.setblocking(0)
     except (KeyboardInterrupt , OSError):
         print("Closing server socket...")
         serverSocket.close()

@@ -8,9 +8,9 @@ import _thread
 
 server_socket = None
 client_configs = configparser.SafeConfigParser()
-client_configs.read('configs.ini')
-HOST = client_configs['GeneralSettings']['Host']
-PORT = int(client_configs['GeneralSettings']['Port'])
+client_configs.read('/home/varungujarathi9/Personal/Projects/Local-Video-Party/client/configs.ini')
+HOST = client_configs['GeneralSettings']['host']
+PORT = int(client_configs['GeneralSettings']['port'])
 
 message_queue = []
 users = []
@@ -21,6 +21,7 @@ def connect_server():
     try:
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.connect((HOST, PORT))
+        _thread.start_new_thread(receive_messages, ())
         return True
     except Exception as e:
         print("EXCEPTION IN CONNECT SERVER: " + str(e))
@@ -65,6 +66,24 @@ def get_users_in_room():
 
 def receive_messages():
     while True:
-        message_queue.append(str(server_socket.recv(1024).decode("utf-8")))
-        # TODO: check what the message is 
-_thread.start_new_thread(receive_messages, ())
+        if server_socket is not None:
+            message = str(server_socket.recv(1024).decode("utf-8"))
+            if message not in ('',' ', None):
+                message_queue.append(message)
+            else:
+                # server_socket = None
+                break
+
+
+
+if __name__ == "__main__":
+    connect_server()
+    time.sleep(1)
+    if len(message_queue) > 0 :
+        print(message_queue.pop(0))
+
+    create_room('varungujarathi')
+    time.sleep(1)
+    while True:
+        if len(message_queue) > 0 :
+            print(message_queue.pop(0))
