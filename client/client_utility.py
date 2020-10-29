@@ -68,13 +68,12 @@ def receive_messages():
     while True:
         if server_socket is not None:
             message = str(server_socket.recv(1024).decode("utf-8"))
-            if message not in ('',' ', None):
-                message_queue.append(message)
-            else:
-                # server_socket = None
+            if message in ('',' ', None):
+                server_socket.close()
+                message_queue.append(json.dumps({'closed':'server disconnected'}))
                 break
-
-
+            else:
+                message_queue.append(message)
 
 if __name__ == "__main__":
     connect_server()
