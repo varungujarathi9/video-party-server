@@ -31,7 +31,6 @@ channels = {}
 
 def handler():
     global clientSockets
-    sendDataFlag = False
     while True:
         # iterate through all clients
         for clientSocket in clientSockets:
@@ -43,8 +42,8 @@ def handler():
                     roomID = getRandomAlphanumericString(6)
                     rooms[roomID] = {'members':[data['user_id']], 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
                     channels[roomID] = {data['user_id']:clientSocket}
-                    sendDataFlag = True
-                    # clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
+                    clientSocket.send(bytes(json.dumps({roomID:rooms[roomID]}), encoding='utf8'))
+                    
                 elif data['action_id'] == 1:
                     # join a room
                     if data['room_id'] in rooms:
@@ -77,7 +76,7 @@ def handler():
                 if(sendDataFlag):
                     sendToAllClients(clientSockets, json.dumps({roomID:rooms[roomID]}))
                     sendDataFlag = False
-                    
+
             except BlockingIOError:
                 pass
             except KeyboardInterrupt:
@@ -91,7 +90,7 @@ def handler():
 
 # start handler thread which syncs all clients
 
-# _thread.start_new_thread(handler, ())
+_thread.start_new_thread(handler, ())
 while True:
     try:
         # accpet new client and add client's socket to list

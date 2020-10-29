@@ -4,6 +4,8 @@
 # 3 - pause
 # 4 - play at
 
+# TODO: Import the message queue list from utility.py in here and keep reading it
+
 import tkinter
 import cv2
 import PIL.Image, PIL.ImageTk
