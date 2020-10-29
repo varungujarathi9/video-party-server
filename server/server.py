@@ -16,7 +16,7 @@ from server_utility import get_room_id, send_to_all_clients
 
 # variables
 ServerConfigs = configparser.SafeConfigParser()
-ServerConfigs.read('/home/varungujarathi9/Personal/Projects/Local-Video-Party/server/configs.ini')
+ServerConfigs.read('configs.ini')
 HOST = ServerConfigs['GeneralSettings']['Host']
 PORT = int(ServerConfigs['GeneralSettings']['Port'])
 addr = (HOST, PORT)
@@ -102,15 +102,9 @@ while True:
     try:
         # accpet new client and add client's socket to list
         clientSocket, clientAddr = serverSocket.accept()
-<<<<<<< Updated upstream
         if clientSocket not in clientSockets:
             clientSockets.append(clientSocket)
             clientSocket.setblocking(0)
-=======
-        print("checking the clientsocket",clientSocket)
-        clientSockets.append(clientSocket)
-        clientSocket.setblocking(0)
->>>>>>> Stashed changes
     except (KeyboardInterrupt , OSError):
         print("Closing server socket...")
         serverSocket.close()

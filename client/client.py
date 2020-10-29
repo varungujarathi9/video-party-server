@@ -22,8 +22,10 @@ class Home:
         self.window = window
         self.window.title(window_title)
          
-        
+        self.UsernameLabel = tkinter.Label(window,text='Username',font=('calibre', 
+                            10, 'bold'))
         self.textExample = tkinter.Text(window, height=4)
+        self.UsernameLabel.pack()
         self.textExample.pack()
  
 
@@ -32,13 +34,43 @@ class Home:
         self.canvas.pack()
         
           # Button that lets the user take a snapshot
-        self.btn_submit=tkinter.Button(window, text="Submit", width=30,command = self.home ) 
+        
+        self.btn_submit=tkinter.Button(window, text="Submit", width=30,command = self.roomDecide ) 
         self.btn_submit.pack(anchor=tkinter.CENTER, expand=True)
         
         # self.btn_browse=tkinter.Button(window, text="UserPage", width=30,command = self.browse ) 
         # self.btn_browse.pack(anchor=tkinter.CENTER, expand=True)
         
         self.window.mainloop()
+    
+
+    def roomDecide(self):
+      userVal = self.textExample.get("1.0",'end-1c')
+      
+      self.window = tkinter.Tk()  
+      self.window.title('Hello '+userVal ) 
+      self.window.geometry("500x500") 
+      self.window.config(background = "white") 
+      label_file_explorer = tkinter.Label(self.window, 
+        							text = "Select room", 
+        							width = 100, height = 4, 
+        							fg = "blue")
+      btn_create = tkinter.Button(self.window, 
+        						text = "Create Room", 
+        						command = self.browse,width=10)
+      btn_join = tkinter.Button(self.window, 
+        						text = "Join Room", 
+        						command =cu.join_room("aravind",1),width=10)
+      button_exit = tkinter.Button(self.window, 
+        					text = "Exit", 
+        					command = exit,width=10) 
+      btn_create.grid(column = 1,row = 5)
+       
+      btn_join.grid(column = 1,row = 6) 
+      button_exit.grid(column = 1,row = 7)  
+       
+
+
         
     
     def browse(self):
@@ -73,27 +105,18 @@ class Home:
         						text = "Browse Files", 
         						command = browseFiles,width=10) 
         
-        button_exit = tkinter.Button(self.window, 
-        					text = "Exit", 
-        					command = exit,width=10) 
+       
         
         # get username from receive message
-        btn_create = tkinter.Button(self.window, 
-        						text = "Create Room", 
-        						command = cu.create_room("Aravind"),width=10) 
+       
         code = tkinter.Text(self.window, height=2)
-        btn_join = tkinter.Button(self.window, 
-        						text = "Join Room", 
-        						command =cu.join_room("aravind",1),width=10) 
+        
         
  
         label_file_explorer.grid(column = 1, row = 1) 
         code.grid(column=1,row = 3)
         button_explore.grid(column = 1, row = 4) 
-        btn_create.grid(column = 1,row = 5)
-       
-        btn_join.grid(column = 1,row = 6) 
-        button_exit.grid(column = 1,row = 7) 
+        
         
         # Let the window wait for any events 
         self.window.mainloop() 

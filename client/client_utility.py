@@ -8,7 +8,7 @@ import _thread
 
 server_socket = None
 client_configs = configparser.SafeConfigParser()
-client_configs.read('/home/varungujarathi9/Personal/Projects/Local-Video-Party/client/configs.ini')
+client_configs.read('configs.ini')
 HOST = client_configs['GeneralSettings']['host']
 PORT = int(client_configs['GeneralSettings']['port'])
 
@@ -22,6 +22,7 @@ def connect_server():
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.connect((HOST, PORT))
         _thread.start_new_thread(receive_messages, ())
+        print("server connected")
         return True
     except Exception as e:
         print("EXCEPTION IN CONNECT SERVER: " + str(e))
@@ -75,6 +76,7 @@ def receive_messages():
                 break
             else:
                 message_queue.append(message)
+        return message_queue
 
 if __name__ == "__main__":
     connect_server()
