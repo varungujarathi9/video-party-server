@@ -35,8 +35,8 @@ class Home:
         self.btn_submit=tkinter.Button(window, text="Submit", width=30,command = self.home ) 
         self.btn_submit.pack(anchor=tkinter.CENTER, expand=True)
         
-        self.btn_browse=tkinter.Button(window, text="UserPage", width=30,command = self.browse ) 
-        self.btn_browse.pack(anchor=tkinter.CENTER, expand=True)
+        # self.btn_browse=tkinter.Button(window, text="UserPage", width=30,command = self.browse ) 
+        # self.btn_browse.pack(anchor=tkinter.CENTER, expand=True)
         
         self.window.mainloop()
         
@@ -44,7 +44,7 @@ class Home:
     def browse(self):
         
         def browseFiles():
-        
+          
             filename = filedialog.askopenfilename(initialdir = "/", 
         										title = "Select a File", 
         										filetypes = (("Text files", 
@@ -71,29 +71,29 @@ class Home:
         	
         button_explore = tkinter.Button(self.window, 
         						text = "Browse Files", 
-        						command = browseFiles) 
+        						command = browseFiles,width=10) 
         
         button_exit = tkinter.Button(self.window, 
         					text = "Exit", 
-        					command = exit) 
+        					command = exit,width=10) 
         
-        
+        # get username from receive message
         btn_create = tkinter.Button(self.window, 
         						text = "Create Room", 
-        						command = browseFiles) 
+        						command = cu.create_room("Aravind"),width=10) 
         code = tkinter.Text(self.window, height=2)
         btn_join = tkinter.Button(self.window, 
         						text = "Join Room", 
-        						command = cu.join_room) 
+        						command =cu.join_room("aravind",1),width=10) 
         
  
         label_file_explorer.grid(column = 1, row = 1) 
-        
-        button_explore.grid(column = 1, row = 2) 
-        btn_create.grid(column = 1,row = 3)
-        code.grid(column=1,row = 4)
-        btn_join.grid(column = 1,row = 4) 
-        button_exit.grid(column = 1,row = 5) 
+        code.grid(column=1,row = 3)
+        button_explore.grid(column = 1, row = 4) 
+        btn_create.grid(column = 1,row = 5)
+       
+        btn_join.grid(column = 1,row = 6) 
+        button_exit.grid(column = 1,row = 7) 
         
         # Let the window wait for any events 
         self.window.mainloop() 

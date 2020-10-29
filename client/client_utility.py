@@ -32,6 +32,7 @@ def create_room(username):
 
     data = {'action_id':0, 'username':username}
     try:
+        print(data)
         server_socket.send(bytes(json.dumps(data), encoding='utf8'))
         return True
     except Exception as e:

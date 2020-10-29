@@ -23,6 +23,7 @@ addr = (HOST, PORT)
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(addr)
+print("socket binded to required address")
 serverSocket.listen(10)
 clientSockets = []
 rooms = {}
@@ -101,9 +102,15 @@ while True:
     try:
         # accpet new client and add client's socket to list
         clientSocket, clientAddr = serverSocket.accept()
+<<<<<<< Updated upstream
         if clientSocket not in clientSockets:
             clientSockets.append(clientSocket)
             clientSocket.setblocking(0)
+=======
+        print("checking the clientsocket",clientSocket)
+        clientSockets.append(clientSocket)
+        clientSocket.setblocking(0)
+>>>>>>> Stashed changes
     except (KeyboardInterrupt , OSError):
         print("Closing server socket...")
         serverSocket.close()
