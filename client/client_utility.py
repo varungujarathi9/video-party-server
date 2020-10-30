@@ -67,6 +67,7 @@ def get_users_in_room():
     return users
 
 def receive_messages():
+    print('In receive message')
     while True:
         if server_socket is not None:
             message = str(server_socket.recv(1024).decode("utf-8"))
