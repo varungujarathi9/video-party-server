@@ -76,10 +76,9 @@ class Home:
       button_exit = tkinter.Button(self.window,
               text = "Exit",
               command = exit,width=10)
-      btn_create.grid(column = 2,row = 5)
-
-      btn_join.grid(column = 2,row = 6)
-      button_exit.grid(column = 2,row = 7)      
+      btn_create.place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
+      btn_join.place(relx=0.5, rely=0.4, anchor=tkinter.CENTER)
+      button_exit.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)     
     
 
 
