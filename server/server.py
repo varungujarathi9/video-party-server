@@ -42,7 +42,7 @@ def handler():
                 if data['action_id'] == 0:
                     # create room
                     room_id = get_room_id(6)
-                    rooms[room_id] = {'members':[data['username']], 'member_sockets':[client_socket],'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
+                    rooms[room_id] = {'members':[data['username']],'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
                     channels[room_id] = {data['username']:client_socket}
                     client_socket.send(bytes(json.dumps({'join':room_id, 'room':rooms[room_id]}), encoding='utf8'))
 
@@ -51,7 +51,7 @@ def handler():
                     if data['room_id'] in rooms:
                         room_id = data['room_id']
                         rooms[room_id]['members'].append(data['username'])
-                        rooms[room_id]['member_sockets'].append(client_socket)
+                        
                         # client_socket.send(bytes(json.dumps({room_id:rooms[room_id]}), encoding='utf8'))
                         sendDataFlag = True
                     else:
@@ -79,7 +79,7 @@ def handler():
 
                 if(sendDataFlag):
 
-                    send_to_all_clients(rooms[room_id]['member_sockets'], json.dumps({room_id:rooms[room_id]}))
+                    send_to_all_clients(channels[room_id].values(), json.dumps({room_id:rooms[room_id]}))
                     sendDataFlag = False
 
             except BlockingIOError:
@@ -93,7 +93,7 @@ def handler():
                 client_socket.close()
                 client_sockets.remove(client_socket)
                 serverSocket.close()
-            except ConnectionResetError:
+            except (ConnectionResetError, OSError):
                 client_socket.close()
 
 # start handler thread which syncs all clients
