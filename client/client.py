@@ -84,21 +84,36 @@ class Home:
     
 
 
-    def createRoom(self):
-     
+    def createRoom(self):     
       self.createRoomCheck = cu.create_room(self.userVal)
       if(self.createRoomCheck):
         while len(cu.message_queue)==0:
           pass
         print("inside createroom")
-        print(cu.message_queue)
-        message = json.loads(cu.message_queue.pop(0))
+        print(cu.message_queue)        
+        message = json.loads(cu.message_queue.pop(0))        
         if "join" in message.keys():
-          print("display message",json.dumps(message))
+          self.roomId = message['join']       
+          print("roomId",self.roomId)
           self.browse()
         
     def joinRoom(self):
-      print("join room joined")
+      print("inside join room")
+    #   self.window = tkinter.Tk()
+    #   self.window.title('Hello '+self.userVal )
+    #   self.window.geometry("500x500")
+    #   self.window.config(background = "white")
+    #   self.enterRoomId = tkinter.Entry(self.window)
+    #   btn_joinRoom = tkinter.Button(self.window,
+    #             text = "Submit RoomID",
+    #             command =self.joinRoomAccepted,width=10)
+    #   btn_joinRoom.pack(anchor=tkinter.CENTER, expand=True)
+    
+    
+    # def joinRoomAccepted(self):
+    #   print("the roomId is",self.enterRoomId)
+    #   print("the username is",self.userVal)
+      
       
     def browse(self):
 
@@ -132,7 +147,8 @@ class Home:
         						text = "Browse Files",
         						command = browseFiles,width=10)
 
-
+        roomIdLabel=tkinter.Label(self.window,text=self.roomId,
+                                  width=50)
 
         # get username from receive message
 
@@ -143,7 +159,7 @@ class Home:
         label_file_explorer.grid(column = 1, row = 1)
         code.grid(column=1,row = 3)
         button_explore.grid(column = 1, row = 4)
-
+        roomIdLabel.grid(column=1,row=6)
 
         # Let the window wait for any events
         self.window.mainloop()
