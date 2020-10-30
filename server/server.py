@@ -45,7 +45,7 @@ def handler():
                     rooms[room_id] = {'members':[data['username']],'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
                     channels[room_id] = {data['username']:client_socket}
                     client_socket.send(bytes(json.dumps({'join':room_id, 'room':rooms[room_id]}), encoding='utf8'))
-
+                    print("rooms and room id",json.dumps({'join':room_id, 'room':rooms[room_id]}))
                 elif data['action_id'] == 1:
                     # join a room
                     if data['room_id'] in rooms:

@@ -10,6 +10,8 @@ import tkinter
 import cv2
 import PIL.Image, PIL.ImageTk
 import time
+import _thread
+import json
 
 from tkinter import filedialog
 import client_utility as cu
@@ -47,10 +49,10 @@ class Home:
     # check the status of the connection
     def connCheck(self):
       self.connCheck = cu.connect_server()
-      userVal = self.textExample.get()
-      print("check user",userVal)
+      self.userVal = self.textExample.get()
+      print("check user",self.userVal)
       print("check conn",self.connCheck)
-      if(self.connCheck and userVal):
+      if(self.connCheck and self.userVal):
         print("all right")
         self.roomDecide()
       else:
@@ -58,9 +60,9 @@ class Home:
         
 
     def roomDecide(self):
-      userVal = self.textExample.get()
+      # userVal = self.textExample.get()
       self.window = tkinter.Tk()
-      self.window.title('Hello '+userVal )
+      self.window.title('Hello '+self.userVal )
       self.window.geometry("500x500")
       self.window.config(background = "white")
       label_file_explorer = tkinter.Label(self.window,
@@ -69,10 +71,10 @@ class Home:
                     fg = "blue")
       btn_create = tkinter.Button(self.window,
                 text = "Create Room",
-                command = cu.create_room(userVal),width=10)
+                command = self.createRoom,width=10)
       btn_join = tkinter.Button(self.window,
                 text = "Join Room",
-                command =cu.join_room(userVal,1),width=10)
+                command =self.joinRoom,width=10)
       button_exit = tkinter.Button(self.window,
               text = "Exit",
               command = exit,width=10)
@@ -82,7 +84,22 @@ class Home:
     
 
 
-
+    def createRoom(self):
+     
+      self.createRoomCheck = cu.create_room(self.userVal)
+      if(self.createRoomCheck):
+        while len(cu.message_queue)==0:
+          pass
+        print("inside createroom")
+        print(cu.message_queue)
+        message = json.loads(cu.message_queue.pop(0))
+        if "join" in message.keys():
+          print("display message",json.dumps(message))
+          self.browse()
+        
+    def joinRoom(self):
+      print("join room joined")
+      
     def browse(self):
 
         def browseFiles():
@@ -241,4 +258,16 @@ class MyVideoCapture:
   # Create a window and pass it to the Application object
 Home(tkinter.Tk(), "Tkinter and OpenCV")
 
+
+def read_message():
+  while True:
+    print("message que")
+    print(cu.message_queue)
+    if(len(cu.message_queue)>0):
+      message = json.loads(cu.message_queue.pop(0))
+      if "join" in message.keys():
+        Home.browse()
+        print("display message",json.dumps(message))
+    
+# _thread.start_new_thread(read_message,())
 

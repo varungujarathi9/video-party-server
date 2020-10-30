@@ -67,6 +67,7 @@ def get_users_in_room():
     return users
 
 def receive_messages():
+    global message_queue
     print('In receive message')
     while True:
         if server_socket is not None:
@@ -74,10 +75,13 @@ def receive_messages():
             if message in ('',' ', None):
                 server_socket.close()
                 message_queue.append(json.dumps({'closed':'server disconnected'}))
+                print("message not added")
                 break
             else:
                 message_queue.append(message)
+                print(message_queue)
         return message_queue
+    
 
 if __name__ == "__main__":
     connect_server()
