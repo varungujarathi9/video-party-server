@@ -69,10 +69,10 @@ class Home:
                     fg = "blue")
       btn_create = tkinter.Button(self.window,
                 text = "Create Room",
-                command = self.browse,width=10)
+                command = cu.create_room(userVal),width=10)
       btn_join = tkinter.Button(self.window,
                 text = "Join Room",
-                command =cu.join_room("aravind",1),width=10)
+                command =cu.join_room(userVal,1),width=10)
       button_exit = tkinter.Button(self.window,
               text = "Exit",
               command = exit,width=10)
