@@ -5,7 +5,7 @@
 # 4 - play at
 
 # libraries
-from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
+from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR, gethostbyaddr
 import _thread
 import time
 import datetime
@@ -24,7 +24,7 @@ serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(addr)
 print("socket binded to required address")
-serverSocket.listen(10)
+serverSocket.listen()
 client_sockets = []
 rooms = {}
 channels = {}
@@ -102,7 +102,9 @@ _thread.start_new_thread(handler, ())
 while True:
     try:
         # accpet new client and add client's socket to list
-        client_socket, clientAddr = serverSocket.accept()
+        print("Waiting for client")
+        client_socket, client_addr = serverSocket.accept()
+        print("Got new client",client_socket)
         if client_socket not in client_sockets:
             client_sockets.append(client_socket)
             client_socket.setblocking(0)
