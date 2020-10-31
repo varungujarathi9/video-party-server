@@ -5,13 +5,14 @@ import json
 import time
 import configparser
 import _thread
+import traceback 
 
 server_socket = None
 client_configs = configparser.SafeConfigParser()
 client_configs.read('configs.ini')
 HOST = client_configs['GeneralSettings']['host']
 PORT = int(client_configs['GeneralSettings']['port'])
-
+print(HOST, type(HOST))
 message_queue = []
 users = []
 
@@ -26,6 +27,7 @@ def connect_server():
         return True
     except Exception as e:
         print("EXCEPTION IN CONNECT SERVER: " + str(e))
+        traceback.print_exc() 
         return False
 
 def create_room(username):
