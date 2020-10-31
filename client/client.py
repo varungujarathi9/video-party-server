@@ -38,14 +38,14 @@ class Home:
           # Button that lets the user take a snapshot
 
         self.btn_submit=tkinter.Button(window, text="Submit", width=30,command =self.connCheck)
-        
+
         self.btn_submit.pack(anchor=tkinter.CENTER, expand=True)
 
         # self.btn_browse=tkinter.Button(window, text="UserPage", width=30,command = self.browse )
         # self.btn_browse.pack(anchor=tkinter.CENTER, expand=True)
 
         self.window.mainloop()
-        
+
     # check the status of the connection
     def connCheck(self):
       self.connCheck = cu.connect_server()
@@ -57,7 +57,7 @@ class Home:
         self.roomDecide()
       else:
         print(self.connCheck)
-        
+
 
     def roomDecide(self):
       # userVal = self.textExample.get()
@@ -80,23 +80,23 @@ class Home:
               command = exit,width=10)
       btn_create.place(relx=0.5, rely=0.3, anchor=tkinter.CENTER)
       btn_join.place(relx=0.5, rely=0.4, anchor=tkinter.CENTER)
-      button_exit.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)     
-    
+      button_exit.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 
-    def createRoom(self):     
+
+    def createRoom(self):
       self.createRoomCheck = cu.create_room(self.userVal)
       if(self.createRoomCheck):
         while len(cu.message_queue)==0:
           pass
         print("inside createroom")
-        print("msg que",cu.message_queue)        
-        message = json.loads(cu.message_queue.pop(0))        
+        print("msg que",cu.message_queue)
+        message = json.loads(cu.message_queue.pop(0))
         if "join" in message.keys():
-          self.roomId = message['join']       
+          self.roomId = message['join']
           print("roomId",self.roomId)
           self.browse()
-        
+
     def joinRoom(self):
       self.window = tkinter.Tk()
       self.window.title('Hello '+self.userVal )
@@ -108,8 +108,8 @@ class Home:
                 text = "Submit RoomID",
                 command =self.joinRoomAccepted,width=10)
       btn_joinRoom.pack(anchor=tkinter.CENTER, expand=True)
-    
-    
+
+
     def joinRoomAccepted(self):
       validRoomId = self.enterRoomId.get()
       if(validRoomId and self.userVal):
@@ -123,10 +123,10 @@ class Home:
           print("check message",message)
         else:
           print(joinRoomCheck)
-        
-      
-      
-      
+
+
+
+
     def browse(self):
 
         def browseFiles():
@@ -296,6 +296,6 @@ Home(tkinter.Tk(), "Tkinter and OpenCV")
 #       if "join" in message.keys():
 #         Home.browse()
 #         print("display message",json.dumps(message))
-    
+
 # _thread.start_new_thread(read_message,())
 
