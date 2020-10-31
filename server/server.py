@@ -52,7 +52,7 @@ def handler():
                         room_id = data['room_id']
                         rooms[room_id]['members'].append(data['username'])
                         
-                        # client_socket.send(bytes(json.dumps({room_id:rooms[room_id]}), encoding='utf8'))
+                        #client_socket.send(bytes(json.dumps({room_id:rooms[room_id]}), encoding='utf8'))
                         sendDataFlag = True
                     else:
                         client_socket.send(bytes(json.dumps({'error':"Sorry! Room doesn't exist"}), encoding='utf8'))
