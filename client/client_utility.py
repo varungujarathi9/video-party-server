@@ -5,14 +5,14 @@ import json
 import time
 import configparser
 import _thread
-import traceback 
+import traceback
 
 server_socket = None
 client_configs = configparser.SafeConfigParser()
 client_configs.read('configs.ini')
 HOST = client_configs['GeneralSettings']['host']
+print(HOST)
 PORT = int(client_configs['GeneralSettings']['port'])
-print(HOST, type(HOST))
 message_queue = []
 users = []
 
@@ -21,13 +21,14 @@ def connect_server():
 
     try:
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print("Connecting to server")
         server_socket.connect((HOST, PORT))
         _thread.start_new_thread(receive_messages, ())
-        print("server connected")
+        print("Server connected")
         return True
     except Exception as e:
         print("EXCEPTION IN CONNECT SERVER: " + str(e))
-        traceback.print_exc() 
+        traceback.print_exc()
         return False
 
 def create_room(username):
@@ -35,11 +36,11 @@ def create_room(username):
 
     data = {'action_id':0, 'username':username}
     try:
-        print(data)
         server_socket.send(bytes(json.dumps(data), encoding='utf8'))
         return True
     except Exception as e:
         print("EXCEPTION IN CREATE ROOM: " + str(e))
+        raceback.print_exc()
         return False
 
 def join_room(username, room_id):
@@ -81,9 +82,9 @@ def receive_messages():
                 break
             else:
                 message_queue.append(message)
-                print(message_queue)
+                # print(message_queue)
         return message_queue
-    
+
 
 if __name__ == "__main__":
     connect_server()

@@ -4,9 +4,10 @@ Watch downloaded videos together with friends &amp; family
 ## TODO
 
 - [X] Create GUI in Tkinter
-- [ ] Check if username already exists - server
+- [ ] Check if username already exists - server.py
+- [ ] Remove client socket as soon as client leaves - server.py
 - [ ] Web based access - GUI
-- [ ] Create room
+- [X] Create room
 - [ ] Join room
 - [ ] Play
 - [ ] Pause
