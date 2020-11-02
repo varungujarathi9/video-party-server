@@ -9,5 +9,7 @@ def get_room_id(length):
     return result_str
 
 def send_to_all_clients(clientSockets, stringData):
+    print('SEND TO ALL CLIENTS:',stringData, len(clientSockets))
     for clientSocket in clientSockets:
+        print(clientSocket, stringData)
         clientSocket.send(bytes(stringData, encoding='utf8'))
