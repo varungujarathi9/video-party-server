@@ -8,7 +8,8 @@ Watch downloaded videos together with friends &amp; family
 - [ ] Remove client socket as soon as client leaves - server.py
 - [ ] Web based access - GUI
 - [X] Create room
-- [ ] Join room
+- [X] Join room
+- [ ] If no one present in room destroy room
 - [ ] Play
 - [ ] Pause
 - [ ] Forward
