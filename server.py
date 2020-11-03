@@ -70,16 +70,16 @@ def handler():
                             room_id = data['room_id']
                             room_details[room_id]['members'].append(data['username'])
                             room_sockets[room_id][data['username']] = client_socket
-                            
+
                             sendDataFlag = True
                             print("JOIN ROOM",json.dumps({'join':room_id, 'room':room_details[room_id]}))
-                        
+
                 elif data['action_id'] == 2:
                     # play video
                     if data['room_id'] in room_details:
                         room_id = data['room_id']
                         room_details[room_id]['paused'] = False
-                        
+
                         sendDataFlag = True
                     else:
                         client_socket.send(bytes(json.dumps({'error':"Sorry! Room doesn't exist"}), encoding='utf8'))
@@ -109,7 +109,7 @@ def handler():
             except json.decoder.JSONDecodeError:
                 # client_socket.close()
                 client_sockets.remove(client_socket)
-                
+
             except (ConnectionResetError, OSError):
                 # client_socket.close()
                 client_sockets.remove(client_socket)
