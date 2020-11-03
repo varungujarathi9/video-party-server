@@ -49,9 +49,6 @@ def handler():
                         room_id = get_room_id(6)
                         room_details[room_id] = {'members':{data['username']:client_socket.getpeername()},'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
                         room_sockets[room_id] = {data['username']:client_socket}
-                        # print([x.values() for x in list(room_sockets.values())])
-                        # for y in [x.values() for x in list(room_sockets.values())]:
-                        #     print("*"*10, client_socket.getpeername() in y, type(y))
                         
                         client_socket.send(bytes(json.dumps({'created':room_id, 'room':room_details[room_id]}), encoding='utf8'))
                         print("CREATE ROOM",json.dumps({'created':room_id, 'room':room_details[room_id]}))
