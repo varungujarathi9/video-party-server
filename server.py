@@ -12,6 +12,7 @@ import datetime
 import json
 import configparser
 from server_utility import get_room_id, send_to_all_clients
+import os
 # import ServerConfigs
 
 # variables
@@ -115,6 +116,27 @@ def handler():
                             del room_sockets[data['room_id']]
 
                     print('EXITED APP:\nRoom Details:',room_details,'\nRoom Sockets',room_sockets, '\nClient Sockets:', client_sockets)        
+                elif data['action_id'] == 5:
+                    if data['room_id'] not in room_details:
+                        client_socket.send(bytes(json.dumps({'error':"Sorry! Room doesn't exist"}), encoding='utf8'))
+                    
+                    else:
+                        read_filename = os.path.basename(data['read_file'])
+                        read_fileSize = int(data['read_filesize'])
+                        
+                        progress = tqdm.tqdm(range(read_fileSize), f"Receiving {read_filename}", unit="B", unit_scale=True, unit_divisor=1024)
+                        with open(filename, "wb") as f:
+                            for _ in progress:
+                            # read 1024 bytes from the socket (receive)
+                            bytes_read = json.loads(client_socket.recv(4096))
+                            if not bytes_read:    
+                            # nothing is received
+                            # file transmitting is done
+                                break
+                                # write to the file the bytes we just received
+                            f.write(bytes_read)
+                            # update the progress bar
+                            progress.update(len(bytes_read))
 
                 if(sendDataFlag):
                     send_to_all_clients(room_sockets[room_id].values(), json.dumps({'join':room_id, 'room':room_details[room_id]}))
