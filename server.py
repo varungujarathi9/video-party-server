@@ -13,6 +13,7 @@ import json
 import configparser
 from server_utility import get_room_id, send_to_all_clients
 import os
+import tqdm
 # import ServerConfigs
 
 # variables
@@ -122,7 +123,7 @@ def handler():
                     
                     else:
                         read_filename = os.path.basename(data['read_file'])
-                        read_fileSize = int(data['read_filesize'])
+                        read_fileSize = int(data['read_file_size'])
                         
                         progress = tqdm.tqdm(range(read_fileSize), f"Receiving {read_filename}", unit="B", unit_scale=True, unit_divisor=1024)
                         with open(read_filename, "wb") as f:
@@ -174,4 +175,5 @@ while True:
         client_sockets.clear()
         break
     except OSError:
-        client_sockets.remove(client_socket)
+        pass
+        # client_sockets.remove(client_socket)
