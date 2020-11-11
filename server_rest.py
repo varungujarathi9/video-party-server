@@ -1,7 +1,16 @@
 import flask
 from flask import *
+from flask_socketio import SocketIo,emit
 
 app = Flask(__name__)
 
-@app.route('/file_upload')
-def file_upload(request_body)
+socketio = SocketIO(app)
+
+
+
+@socketio.on('my event')
+def test_message(message):
+    print("checking msg",message)
+    emit('my response',message)
+
+
