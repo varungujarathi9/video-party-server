@@ -21,7 +21,7 @@ Watch downloaded videos together with friends &amp; family
 - [ ] .rpm
 - [ ] .dmg
 - [ ] Web UI
-- [] checking gcp
+
 ## TESTCASES
 
 - [ ] client socket should be deleted when the disconnect server action is called
