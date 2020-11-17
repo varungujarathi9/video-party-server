@@ -123,7 +123,8 @@ def handler():
                         client_socket.send(bytes(json.dumps({'error':"Sorry! Room doesn't exist"}), encoding='utf8'))
                     
                     else:
-                        server_rest.test_message("socketio working")
+                        print("checking to call flask before any error")
+                        message  = server_rest.test_message("socketio working")
                         # read_filename = os.path.basename(data['read_file'])
                         # read_fileSize = int(data['read_file_size'])
                         

@@ -1,3 +1,4 @@
 .vscode/settings.json
 __pycache__/server_utility.cpython-36.pyc
 nohup.out
+__pycache__/server_rest.cpython-36.pyc
