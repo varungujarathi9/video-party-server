@@ -27,7 +27,7 @@ services:
     #   dockerfile: Dockerfile
     image: varungujarathi9/video-party-client:latest
     ports:
-      - 80:80    
+      - 80:80
 
   server-sit:
     # container_name: video-party-server
@@ -54,4 +54,4 @@ services:
     #   dockerfile: Dockerfile
     image: varungujarathi9/video-party-server:latest
     ports:
-      - 1793:80    
+      - 1793:80
