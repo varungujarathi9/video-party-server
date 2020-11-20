@@ -22,7 +22,7 @@ jobs:
         run: docker build . --file Dockerfile.uat --tag varungujarathi9/video-party-server:uat
       - name: Login to docker
         run: docker login -u=${{ secrets.DOCKER_USERNAME }} -p=${{ secrets.DOCKER_PASSWORD }}
-      - name: Build the Docker image
+      - name: Push the Docker image
         run: docker push varungujarathi9/video-party-server:uat
       - uses: 8398a7/action-slack@v3
         with:
