@@ -1,0 +1,5 @@
+{
+    "ENVIRONMENT_TYPE" : "Prod",
+    "SERVER_PORT" : 1793,
+    "CLIENT_PORT" : 80
+}

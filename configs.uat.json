@@ -1,0 +1,5 @@
+{
+    "ENVIRONMENT_TYPE" : "UAT",
+    "SERVER_PORT" : 9001,
+    "CLIENT_PORT" : 8001
+}

@@ -1,0 +1,5 @@
+{
+    "ENVIRONMENT_TYPE" : "SIT",
+    "SERVER_PORT" : 9002,
+    "CLIENT_PORT" : 8002
+}

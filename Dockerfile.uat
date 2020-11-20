@@ -1,0 +1,20 @@
+FROM node:13.12.0-alpine as build
+WORKDIR /client
+ENV PATH /client/node_modules/.bin:$PATH
+ARG SERVER_TYPE
+ENV REACT_APP_SERVER_TYPE $SERVER_TYPE
+RUN echo "TYPE:" $SERVER_TYPE
+COPY package.json ./
+COPY package-lock.json ./
+
+RUN npm ci --silent
+COPY . ./
+# replace config file
+RUN cp ./src/configs.uat.json ./src/configs.json
+RUN npm run build
+
+# production environment
+FROM nginx:stable-alpine
+COPY --from=build /client/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

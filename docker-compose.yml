@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+
+  server-sit:
+    # container_name: video-party-server
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: varungujarathi9/video-party-server:sit
+    ports:
+      - 8002:3000
+
+  server-uat:
+    # container_name: video-party-server
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: varungujarathi9/video-party-server:uat
+    ports:
+      - 8001:80
+
+  server-prod:
+    # container_name: video-party-client
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: varungujarathi9/video-party-server:latest
+    ports:
+      - 80:80
