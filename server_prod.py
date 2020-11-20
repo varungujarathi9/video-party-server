@@ -1,4 +1,5 @@
-from .server_rest import app
+from server_rest import app, socketIo
 
 # do some production specific things to the app
-app.config['DEBUG'] = False
+app.debug = False
+socketIo.run(app)

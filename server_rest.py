@@ -3,15 +3,12 @@ from flask import Flask,request,redirect,current_app
 from flask_socketio import SocketIO,emit
 import json
 
-#instantiate 
+#instantiate
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'videoparty100'
 
 #wrapping flask instance with the socketio wrapper
 socketIo = SocketIO(app,cors_allowed_origins="*")
- 
-
-
 
 @socketIo.on('connect')
 def client_connect():
@@ -19,14 +16,14 @@ def client_connect():
     print("client connectecd")
 
 @socketIo.on('message')
-def handleMessage(data):   
+def handleMessage(data):
     print("username receiving")
     print(data)
     emit('outgoingdata',data)
     return None
-   
 
-@socketIo.on('disconnect')  
+
+@socketIo.on('disconnect')
 def client_disconnect():
     print("client disconnected")
 
