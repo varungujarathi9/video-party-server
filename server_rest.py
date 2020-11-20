@@ -1,34 +1,40 @@
 
 from flask import Flask,request,redirect,current_app
 from flask_socketio import SocketIO,emit
+import json
 
+#instantiate 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'videoparty100'
 
-socketio = SocketIO(app,cors_allowed_origins="*")
-
-
-# with app.app_context():
-#     # within this block, current_app points to app.
-#     print(current_app.name)
-
-WELCOME_MSG=[{"welcome_msg":"Welcome to local video player"}]
+#wrapping flask instance with the socketio wrapper
+socketIo = SocketIO(app,cors_allowed_origins="*")
+ 
 
 
-@socketio.on('connect')
+
+@socketIo.on('connect')
 def client_connect():
+    emit("connected",{'msg':"welcome to videoparty"})
     print("client connectecd")
-    emit('MESSAGE',WELCOME_MSG) 
 
-@socketio.on('disconnect')
+@socketIo.on('message')
+def handleMessage(data):   
+    print("username receiving")
+    print(data)
+    emit('outgoingdata',data)
+    return None
+   
+
+@socketIo.on('disconnect')  
 def client_disconnect():
     print("client disconnected")
 
-# @socketio.on("message")
-# def test_message(username):
-#     print("checking username",username)
-#     emit("username",username)
-#     return none
-    
+
+
+
+
 if __name__ == '__main__':
+    #automatic reloads again when made some changes
     app.debug=True
-    socketio.run(app)
+    socketIo.run(app)
