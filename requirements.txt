@@ -2,3 +2,10 @@ opencv_python==3.4.2.16
 opencv_contrib_python==3.4.2.16
 Pillow==8.0.1
 gunicorn==19.9.0
+click==6.7
+Flask==1.0.2
+itsdangerous==0.24
+Jinja2==2.10
+MarkupSafe==1.0
+uWSGI==2.0.17.1
+Werkzeug==0.14.1
