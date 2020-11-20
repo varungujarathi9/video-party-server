@@ -1,4 +1,5 @@
 # Local-Video-Party
+
 Watch downloaded videos together with friends &amp; family
 
 ## TODO
@@ -10,6 +11,7 @@ Watch downloaded videos together with friends &amp; family
 - [ ] Web based access - GUI
 - [X] Create room
 - [X] Join room
+- [ ] If no one present in room destroy room
 - [ ] Play
 - [ ] Pause
 - [ ] Forward
@@ -19,3 +21,8 @@ Watch downloaded videos together with friends &amp; family
 - [ ] .rpm
 - [ ] .dmg
 - [ ] Web UI
+
+## TESTCASES
+
+- [ ] client socket should be deleted when the disconnect server action is called
+- [ ] room should be destroyed when ther is no one in the room
