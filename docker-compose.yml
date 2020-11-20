@@ -2,12 +2,28 @@ version: '3.7'
 
 services:
 
+  watchtower:
+    container_name: watchtower
+    image: index.docker.io/containrrr/watchtower:latest
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '~/.docker/config.json:/config.json'
+    environment: 
+      - WATCHTOWER_NOTIFICATIONS=slack
+      - 'WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL=https://hooks.slack.com/services/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'
+      - WATCHTOWER_NOTIFICATION_SLACK_IDENTIFIER=Docker_Watchtower
+      - 'WATCHTOWER_NOTIFICATION_SLACK_CHANNEL=#updates'
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_REVIVE_STOPPED=true
+      - WATCHTOWER_POLL_INTERVAL=60
+
   client-sit:
     # container_name: video-party-client
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: varungujarathi9/video-party-client:sit
+    container_name: client-sit
+    image: index.docker.io/varungujarathi9/video-party-client:sit
     ports:
       - 8002:3000
 
@@ -16,7 +32,8 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: varungujarathi9/video-party-client:uat
+    container_name: client-uat
+    image: index.docker.io/varungujarathi9/video-party-client:uat
     ports:
       - 8001:80
 
@@ -25,7 +42,8 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: varungujarathi9/video-party-client:latest
+    container_name: client-prod
+    image: index.docker.io/varungujarathi9/video-party-client:latest
     ports:
       - 80:80
 
@@ -34,7 +52,8 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: varungujarathi9/video-party-server:sit
+    container_name: server-sit
+    image: index.docker.io/varungujarathi9/video-party-server:sit
     ports:
       - 5001:5000
 
@@ -43,15 +62,17 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: varungujarathi9/video-party-server:uat
+    container_name: server-uat
+    image: index.docker.io/varungujarathi9/video-party-server:uat
     ports:
-      - 5002:80
+      - 5002:5000
 
   server-prod:
     # container_name: video-party-client
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    image: varungujarathi9/video-party-server:latest
+    container_name: server-prod
+    image: index.docker.io/varungujarathi9/video-party-server:latest
     ports:
-      - 1793:80
+      - 1793:5000

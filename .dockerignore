@@ -5,3 +5,4 @@ Dockerfile.prod
 docker-compose.yml
 src/configs.json
 docker-watchtower-command
+__pycache__
