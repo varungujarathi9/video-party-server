@@ -34,7 +34,7 @@ def handleMessage(data):
     # room_details={'room_id':room_Id,'data':data['data']}
     username_details={'data':data['data']}
     print("-----------------------------------")
-    emit('outgoingdata',username_details,broadcast=True)
+    emit('outgoingdata',username_details)
     return None
 
 #create room roomid function
@@ -46,7 +46,7 @@ def handleRoomId():
     room_details={'roomid':room_Id}
     print("room details is:",room_details)
     print("------------------------")
-    emit('emitRoomId',room_details,broadcast=True)
+    emit('emitRoomId',room_details)
     return None
 
 #join room  roomid function
@@ -56,7 +56,8 @@ def receiveRoomId(joinRoom):
     joinIdValid = joinRoom['joinRoom']['sendRoomId']
     if(joinIdValid in ROOM_ID_ARRAY):
         join_room(joinIdValid)
-        emit('newJoinee', username,room=joinIdValid)
+        memberslist={'membersName':username}
+        emit('newJoinee', memberslist,room=joinIdValid, broadcast=True)
         print('receiving joinees username',username)
     else:
         print("such room id doesnt exist")
