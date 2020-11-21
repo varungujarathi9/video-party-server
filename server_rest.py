@@ -56,7 +56,8 @@ def receiveRoomId(joinRoom):
     joinIdValid = joinRoom['joinRoom']['sendRoomId']
     if(joinIdValid in ROOM_ID_ARRAY):
         join_room(joinIdValid)
-        emit('newJoinee', username,room=joinIdValid)
+        memberslist={'membersName':username}
+        emit('newJoinee', memberslist,room=joinIdValid)
         print('receiving joinees username',username)
     else:
         print("such room id doesnt exist")
