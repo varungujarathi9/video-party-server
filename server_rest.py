@@ -74,4 +74,4 @@ def receiveRoomId(join_room):
 if __name__ == '__main__':
     #automatic reloads again when made some changes
     app.debug=True
-    socketIo.run(app)
+    socketIo.run(app, host="0.0.0.0", port=5000)
