@@ -51,9 +51,9 @@ def handleRoomId():
 
 #join room  roomid function
 @socketIo.on('room_id')
-def receiveRoomId(join_room):
-    username=join_room['username']
-    joinIdValid = join_room['sendRoomId']
+def receiveRoomId(joinRoom):
+    username=joinRoom['joinRoom']['userName']
+    joinIdValid = joinRoom['joinRoom']['sendRoomId']
     if(joinIdValid in ROOM_ID_ARRAY):
         join_room(joinIdValid)
         emit('newJoinee', username,room=joinIdValid)
