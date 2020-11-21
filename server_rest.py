@@ -1,6 +1,6 @@
 
 from flask import Flask,request,redirect,current_app
-from flask_socketio import SocketIO,emit
+from flask_socketio import SocketIO,emit,join_room,leave_room
 import json
 import string
 import random
@@ -37,6 +37,7 @@ def handleMessage(data):
     emit('outgoingdata',username_details,broadcast=True)
     return None
 
+#create room roomid function
 @socketIo.on('my_roomId')
 def handleRoomId():
     room_Id = get_room_id()
@@ -45,14 +46,18 @@ def handleRoomId():
     room_details={'roomid':room_Id}
     print("room details is:",room_details)
     print("------------------------")
-    emit('emitRoomId',room_details)
+    emit('emitRoomId',room_details,broadcast=True)
     return None
-   
+
+#join room  roomid function
 @socketIo.on('room_id')
-def receiveRoomId(sendRoomId):
-    joinIdValid = sendRoomId['sendRoomId']
+def receiveRoomId(join_room):
+    username=join_room['username']
+    joinIdValid = join_room['sendRoomId']
     if(joinIdValid in ROOM_ID_ARRAY):
-        print('receiving room id',sendRoomId)
+        join_room(joinIdValid)
+        emit('newJoinee', username,room=joinIdValid)
+        print('receiving joinees username',username)
     else:
         print("such room id doesnt exist")
 
