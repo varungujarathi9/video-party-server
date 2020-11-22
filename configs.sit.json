@@ -1,5 +1,5 @@
 {
     "ENVIRONMENT_TYPE" : "SIT",
-    "SERVER_PORT" : 9002,
-    "CLIENT_PORT" : 8002
+    "SERVER" : "http://35.223.15.12:5001",
+    "CLIENT" : "http://35.223.15.12:3001"
 }

@@ -1,5 +1,5 @@
 {
     "ENVIRONMENT_TYPE" : "Dev",
-    "SERVER_PORT" : 9003,
-    "CLIENT_PORT" : 8003
+    "SERVER" : "http://35.223.15.12:5000",
+    "CLIENT" : "http://35.223.15.12:3000"
 }

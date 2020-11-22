@@ -25,7 +25,7 @@ services:
     container_name: client-sit
     image: index.docker.io/varungujarathi9/video-party-client:sit
     ports:
-      - 8002:3000
+      - 3002:3000
 
   client-uat:
     # container_name: video-party-client
@@ -35,7 +35,7 @@ services:
     container_name: client-uat
     image: index.docker.io/varungujarathi9/video-party-client:uat
     ports:
-      - 8001:80
+      - 3001:80
 
   client-prod:
     # container_name: video-party-client
