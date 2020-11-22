@@ -34,7 +34,7 @@ def handleMessage(data):
     # room_details={'room_id':room_Id,'data':data['data']}
     username_details={'data':data['data']}
     print("-----------------------------------")
-    emit('outgoingdata',username_details,broadcast=True)
+    emit('outgoingdata',username_details)
     return None
 
 #create room roomid function
@@ -46,7 +46,7 @@ def handleRoomId():
     room_details={'roomid':room_Id}
     print("room details is:",room_details)
     print("------------------------")
-    emit('emitRoomId',room_details,broadcast=True)
+    emit('emitRoomId',room_details)
     return None
 
 #join room  roomid function
@@ -57,12 +57,21 @@ def receiveRoomId(joinRoom):
     if(joinIdValid in ROOM_ID_ARRAY):
         join_room(joinIdValid)
         memberslist={'membersName':username}
-        emit('newJoinee', memberslist,room=joinIdValid)
+        emit('newJoinee', memberslist,room=joinIdValid, broadcast=True)
+
         print('receiving joinees username',username)
     else:
+        send("such room id doesnt exist")
         print("such room id doesnt exist")
 
-    
+
+@socketIo.on('pause_details')
+def pauseDetails(pauseDetails):
+    print('checking whether playing or not',pauseDetails['pauseDetails']['playing'])
+    print('checking whether playing or not',pauseDetails['pauseDetails']['pauseTime'])
+    print('checking whether playing or not',pauseDetails['pauseDetails']['progressTime'])
+
+
 
 # @socketIo.on('my_joiningId')
 # def receiveJoinId(sendRoomId):

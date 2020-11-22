@@ -1,5 +1,5 @@
 {
     "ENVIRONMENT_TYPE" : "UAT",
-    "SERVER_PORT" : 9001,
-    "CLIENT_PORT" : 8001
+    "SERVER_PORT" : "http://35.223.15.12:5002",
+    "CLIENT_PORT" : "http://35.223.15.12:3002"
 }
