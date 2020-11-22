@@ -43,9 +43,13 @@ def create_room(data):
 def start_video():
     emit('video-started', broadcast=True, include_self=True)
     
-
+@socketIo.on('video-update')
+def pauseDetails(pauseDetails):
+    print('checking whether playing or not',pauseDetails['pauseDetails']['playing'])
+    print('checking whether playing or not',pauseDetails['pauseDetails']['pauseTime'])
+    print('checking whether playing or not',pauseDetails['pauseDetails']['progressTime'])
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
     app.debug=True
-    socketIo.run(app, host="0.0.0.0", port=5000)
+    socketIo.run(app)
