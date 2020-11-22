@@ -32,50 +32,17 @@ def create_room(data):
     join_room(room_id)
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
-@socketIo.on('message')
-def handleMessage(data):   
-    print("username receiving")
-    print("data is:",data['data'])
-    # room_Id = get_room_id()
-    # room_details={'room_id':room_Id,'data':data['data']}
-    username_details={'data':data['data']}
-    print("-----------------------------------")
-    emit('outgoingdata',username_details)
-    return None
+@socketIo.on('join-room')
+def create_room(data):
+    rooms_details[data['roomID']]['members'].append(data['username'])
+    join_room(data['roomID'])
+    emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
+    emit('new-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False)
 
-#create room roomid function
-@socketIo.on('my_roomId')
-def handleRoomId():
-    room_Id = get_room_id()
-    ROOM_ID_ARRAY.append(room_Id)
-    print('all room ids ',ROOM_ID_ARRAY)
-    room_details={'roomid':room_Id}
-    print("room details is:",room_details)
-    print("------------------------")
-    emit('emitRoomId',room_details)
-    return None
-
-#join room  roomid function
-@socketIo.on('room_id')
-def receiveRoomId(joinRoom):
-    username=joinRoom['joinRoom']['userName']
-    joinIdValid = joinRoom['joinRoom']['sendRoomId']
-    if(joinIdValid in ROOM_ID_ARRAY):
-        join_room(joinIdValid)
-        memberslist={'membersName':username}
-        emit('newJoinee', memberslist,room=joinIdValid, broadcast=True)
-        print('receiving joinees username',username)
-    else:
-        print("such room id doesnt exist")
-
+@socketIo.on('start-video')
+def start_video():
+    emit('video-started', broadcast=True, include_self=True)
     
-
-# @socketIo.on('my_joiningId')
-# def receiveJoinId(sendRoomId):
-#     print('join')
-
-
-
 
 
 if __name__ == '__main__':
