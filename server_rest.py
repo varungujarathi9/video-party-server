@@ -39,7 +39,7 @@ def joinroom(data):
     rooms_details[data['roomID']]['members'].append(data['username'])
     join_room(data['roomID'])
     emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
-    emit('update-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False)
+    emit('update-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
 
 @socketIo.on('start-video')
 def start_video():
@@ -49,7 +49,7 @@ def start_video():
 def video_update(data):
     print('playing: ',data['pauseDetails']['playing'])
     print('progressTime',data['pauseDetails']['progressTime'])
-    emit('updated-video',data, broadcast=True, include_self=False )
+    emit('updated-video',data, broadcast=True, include_self=False,room=data['roomID'] )
 
 @socketIo.on('remove-member')
 def remove_member(data):
@@ -58,7 +58,7 @@ def remove_member(data):
     leave_room(data['roomID'])
     print(data)
     emit('left_room',rooms_details[data['roomID']])
-    emit('update-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False)
+    emit('update-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
 
 
 @socketIo.on('remove-all-member')
@@ -67,7 +67,7 @@ def remove_all_members(data):
     global rooms_details
     rooms_details[data['roomID']]['members'].clear()   
     leave_room(data['roomID'])
-    emit('all_left',rooms_details[data['roomID']],broadcast=True)
+    emit('all_left',rooms_details[data['roomID']],broadcast=True,room=data['roomID'])
 
     
     # emit('updated-list')
