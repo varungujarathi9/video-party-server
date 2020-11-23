@@ -45,9 +45,7 @@ services:
     container_name: clientprod
     image: index.docker.io/varungujarathi9/video-party-client:latest
     ports:
-      - 80:80
-    networks:
-      - prod  
+      - 80:80 
 
   serversit:
     # container_name: video-party-server
@@ -78,5 +76,3 @@ services:
     image: index.docker.io/varungujarathi9/video-party-server:latest
     ports:
       - 1793:5000
-    networks:
-      - prod
