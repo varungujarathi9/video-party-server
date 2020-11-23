@@ -4,4 +4,4 @@ WORKDIR /server
 RUN cp configs.uat.json configs.json
 RUN pip install -r requirements.txt
 EXPOSE 5000
-ENTRYPOINT ["gunicorn", "--config", "gunicorn_config.py", "server_rest:app"]
+ENTRYPOINT ["gunicorn", "-k gevent -w 1", "--config", "gunicorn_config.py", "server_prod:app"]
