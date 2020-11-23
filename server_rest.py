@@ -42,14 +42,14 @@ def joinroom(data):
     emit('update-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
 
 @socketIo.on('start-video')
-def start_video():
-    emit('video-started', broadcast=True, include_self=True)
+def start_video(room_id):
+    emit('video-started', broadcast=True, include_self=True, room=room_id['room_id'])
     
 @socketIo.on('video-update')
 def video_update(data):
     print('playing: ',data['pauseDetails']['playing'])
     print('progressTime',data['pauseDetails']['progressTime'])
-    emit('updated-video',data, broadcast=True, include_self=False,room=data['roomID'] )
+    emit('updated-video',data, broadcast=True, include_self=False,room=data['pauseDetails']['roomID'] )
 
 @socketIo.on('remove-member')
 def remove_member(data):
@@ -64,13 +64,9 @@ def remove_member(data):
 @socketIo.on('remove-all-member')
 def remove_all_members(data):
     global rooms_details
-    global rooms_details
-    rooms_details[data['roomID']]['members'].clear()   
+    rooms_details[data['roomID']]['members'].clear()
+    emit('all_left',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
     leave_room(data['roomID'])
-    emit('all_left',rooms_details[data['roomID']],broadcast=True,room=data['roomID'])
-
-    
-    # emit('updated-list')
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
