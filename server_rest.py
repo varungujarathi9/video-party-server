@@ -27,17 +27,19 @@ def get_room_id(length):
 
 @socketIo.on('create-room')
 def create_room(data):
+    global rooms_details
     room_id = get_room_id(6)
     rooms_details[room_id] = {'members':[data['username']],'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'),  'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
     join_room(room_id)
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
 @socketIo.on('join-room')
-def create_room(data):
+def joinroom(data):
+    global rooms_details
     rooms_details[data['roomID']]['members'].append(data['username'])
     join_room(data['roomID'])
     emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
-    emit('new-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False)
+    emit('update-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False)
 
 @socketIo.on('start-video')
 def start_video():
@@ -49,7 +51,29 @@ def video_update(data):
     print('progressTime',data['pauseDetails']['progressTime'])
     emit('updated-video',data, broadcast=True, include_self=False )
 
+@socketIo.on('remove-member')
+def remove_member(data):
+    global rooms_details
+    rooms_details[data['roomID']]['members'].remove(data['username'])    
+    leave_room(data['roomID'])
+    print(data)
+    emit('left_room',rooms_details[data['roomID']])
+    emit('update-joinee', rooms_details[data['roomID']], broadcast=True, include_self=False)
+
+
+@socketIo.on('remove-all-member')
+def remove_all_members(data):
+    global rooms_details
+    global rooms_details
+    rooms_details[data['roomID']]['members'].clear()   
+    leave_room(data['roomID'])
+    emit('all_left',rooms_details[data['roomID']],broadcast=True)
+
+    
+    # emit('updated-list')
+
 if __name__ == '__main__':
     #automatic reloads again when made some changes
     app.debug=True
+    # use this while running in gcsp server
     socketIo.run(app, host='0.0.0.0', port=5000)
