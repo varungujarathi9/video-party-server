@@ -5,5 +5,7 @@ RUN cp configs.uat.json configs.json
 RUN apt-get update
 RUN apt-get install gcc python3-dev -y
 RUN pip install -r requirements.txt
+COPY ./nginx-conf/nginx.conf /etc/nginx/conf.d
 EXPOSE 5000
-ENTRYPOINT ["gunicorn", "-k geventwebsocket.gunicorn.workers.GeventWebSocketWorker", "-w 1", "--config", "gunicorn_config.py", "server_prod:app"]
+RUN gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 -b 127.0.0.1:5000 --config gunicorn_config.py server_prod:app --daemon
+ENTRYPOINT [ "executable" ]
