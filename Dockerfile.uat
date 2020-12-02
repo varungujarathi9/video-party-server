@@ -2,6 +2,8 @@ FROM python:3.6-slim
 COPY . /server
 WORKDIR /server
 RUN cp configs.uat.json configs.json
+RUN apt-get update
+RUN apt-get install gcc python3-dev -y
 RUN pip install -r requirements.txt
 EXPOSE 5000
-ENTRYPOINT ["gunicorn", "--config", "gunicorn_config.py", "server_prod:app"]
+ENTRYPOINT ["gunicorn", "-k geventwebsocket.gunicorn.workers.GeventWebSocketWorker", "-w 1", "--config", "gunicorn_config.py", "server_prod:app"]
