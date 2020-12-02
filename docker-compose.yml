@@ -98,7 +98,7 @@ services:
     image: index.docker.io/varungujarathi9/video-party-server:latest
     restart: unless-stopped
     ports:
-      - 1793:5000
+      - 1793:443
 
 volumes:
   certbot-etc:
