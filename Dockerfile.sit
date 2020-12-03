@@ -4,7 +4,7 @@ FROM python:3.6-slim
 # set working directory
 WORKDIR /server
 RUN apt-get update
-RUN apt-get install gcc python3-dev
+RUN apt-get install gcc python3-dev -y
 # install app dependencies
 COPY ./requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt
