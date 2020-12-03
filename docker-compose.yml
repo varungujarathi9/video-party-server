@@ -36,7 +36,7 @@ services:
     #   dockerfile: Dockerfile
     container_name: clientsit
     image: index.docker.io/varungujarathi9/video-party-client:sit
-    # restart: unless-stopped
+    restart: unless-stopped
     ports:
       - 3001:3000
     
@@ -47,7 +47,10 @@ services:
     #   dockerfile: Dockerfile
     container_name: clientuat
     image: index.docker.io/varungujarathi9/video-party-client:uat
-    # restart: unless-stopped
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    restart: unless-stopped
     ports:
       - 3002:80
 
@@ -58,6 +61,7 @@ services:
     #   dockerfile: Dockerfile
     container_name: clientprod
     image: index.docker.io/varungujarathi9/video-party-client:latest
+    restart: unless-stopped
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
@@ -72,7 +76,7 @@ services:
     #   dockerfile: Dockerfile
     container_name: serversit
     image: index.docker.io/varungujarathi9/video-party-server:sit
-    # restart: unless-stopped
+    restart: unless-stopped
     ports:
       - 5001:5000
 
@@ -83,7 +87,10 @@ services:
     #   dockerfile: Dockerfile
     container_name: serveruat
     image: index.docker.io/varungujarathi9/video-party-server:uat
-    # restart: unless-stopped
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    restart: unless-stopped
     ports:
       - 5002:5000
 
@@ -94,7 +101,7 @@ services:
     #   dockerfile: Dockerfile
     container_name: serverprod
     image: index.docker.io/varungujarathi9/video-party-server:latest
-    # restart: unless-stopped
+    restart: unless-stopped
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
