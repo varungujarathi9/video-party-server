@@ -1,5 +1,5 @@
 {
     "ENVIRONMENT_TYPE" : "Prod",
-    "SERVER_PORT" : "http://35.223.15.12:1793",
-    "CLIENT_PORT" : "http://35.223.15.12"
+    "SERVER" : "wss://videoparty.tk:1793",
+    "CLIENT" : "http://35.223.15.12"
 }
