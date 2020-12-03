@@ -26,3 +26,12 @@ Watch downloaded videos together with friends &amp; family
 
 - [ ] client socket should be deleted when the disconnect server action is called
 - [ ] room should be destroyed when ther is no one in the room
+
+
+## CHANGELOG
+
+0.1 websocket server
+0.2 rest api
+0.3 socketio
+0.4 start video play/pause video
+0.5 ssl certificate with nginx as proxy
