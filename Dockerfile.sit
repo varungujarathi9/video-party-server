@@ -1,23 +1,20 @@
 # pull official base image
-FROM node:12.8.1
+FROM python:3.6-slim
 
 # set working directory
-WORKDIR /client
-
-# add `/client/node_modules/.bin` to $PATH
-ENV PATH /client/node_modules/.bin:$PATH
+WORKDIR /server
 
 # install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install --silent
+COPY ./requirements.txt ./requirements.txt
+RUN pip3 install -r requirements.txt
 
 # add app
 COPY . ./
 
 # replace config file
-RUN cp ./src/configs.sit.json ./src/configs.json
+RUN cp configs.sit.json configs.json
 
+EXPOSE 5000
 # start app
-CMD ["npm", "start"]
+CMD ["python3", "server_rest.py"]
 

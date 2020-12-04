@@ -22,7 +22,7 @@ jobs:
         run: docker build . --file Dockerfile.sit --tag varungujarathi9/video-party-server:sit
       - name: Login to docker
         run: docker login -u=${{ secrets.DOCKER_USERNAME }} -p=${{ secrets.DOCKER_PASSWORD }}
-      - name: Build the Docker image
+      - name: Push the Docker image
         run: docker push varungujarathi9/video-party-server:sit
       - uses: 8398a7/action-slack@v3
         with:
@@ -34,7 +34,7 @@ jobs:
               icon_emoji: ':octocat:',
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${{github.repository}}${process.env.AS_WORKFLOW}\nJob status : ${{ job.status }}`,
+                text: `${{github.repository}}\n${process.env.AS_WORKFLOW}\nJob status : ${{ job.status }}`,
               }]
             }
         env:
