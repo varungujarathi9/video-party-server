@@ -1,4 +1,3 @@
-
 from flask import Flask,request,redirect,current_app, jsonify
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
@@ -96,3 +95,12 @@ if __name__ == '__main__':
     app.debug=True
     # use this while running in gcsp server
     socketIo.run(app, host='0.0.0.0', port=5000)
+# from flask import Flask
+# app = Flask(__name__)
+
+# @app.route('/')
+# def hello_world():
+#     return 'Hello World!'
+
+# if __name__ == '__main__':
+#     app.run()

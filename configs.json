@@ -1,5 +1,5 @@
 {
     "ENVIRONMENT_TYPE" : "Dev",
-    "SERVER" : "http://35.223.15.12:5000",
+    "SERVER" : "ws://videoparty.tk:5002",
     "CLIENT" : "http://35.223.15.12:3000"
 }

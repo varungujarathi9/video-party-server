@@ -8,6 +8,7 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - '~/.docker/config.json:/config.json'
+    restart: unless-stopped
     environment: 
       - WATCHTOWER_NOTIFICATIONS=slack
       - 'WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL=https://hooks.slack.com/services/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'
@@ -16,6 +17,17 @@ services:
       - WATCHTOWER_INCLUDE_STOPPED=true
       - WATCHTOWER_REVIVE_STOPPED=true
       - WATCHTOWER_POLL_INTERVAL=60
+  
+  # certbot:
+  #   image: certbot/certbot
+  #   container_name: certbot
+  #   volumes:
+  #     - certbot-etc:/etc/letsencrypt
+  #     - certbot-var:/var/lib/letsencrypt
+  #     - web-root:/var/www/html
+  #   depends_on:
+  #     - clientprod
+  #   command: certonly --webroot --webroot-path=/var/www/html --email v.gujarathi777@gmail.com --agree-tos --no-eff-email --force-renewal -d videoparty.tk  -d www.videoparty.tk
 
   clientsit:
     # container_name: video-party-client
@@ -24,6 +36,7 @@ services:
     #   dockerfile: Dockerfile
     container_name: clientsit
     image: index.docker.io/varungujarathi9/video-party-client:sit
+    restart: unless-stopped
     ports:
       - 3001:3000
     
@@ -34,8 +47,12 @@ services:
     #   dockerfile: Dockerfile
     container_name: clientuat
     image: index.docker.io/varungujarathi9/video-party-client:uat
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    restart: unless-stopped
     ports:
-      - 3002:80
+      - 3002:443
 
   clientprod:
     # container_name: video-party-client
@@ -44,8 +61,12 @@ services:
     #   dockerfile: Dockerfile
     container_name: clientprod
     image: index.docker.io/varungujarathi9/video-party-client:latest
+    restart: unless-stopped
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
     ports:
-      - 80:80 
+      - 443:443 
 
   serversit:
     # container_name: video-party-server
@@ -54,6 +75,7 @@ services:
     #   dockerfile: Dockerfile
     container_name: serversit
     image: index.docker.io/varungujarathi9/video-party-server:sit
+    restart: unless-stopped
     ports:
       - 5001:5000
 
@@ -64,8 +86,12 @@ services:
     #   dockerfile: Dockerfile
     container_name: serveruat
     image: index.docker.io/varungujarathi9/video-party-server:uat
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    restart: unless-stopped
     ports:
-      - 5002:5000
+      - 5002:443
 
   serverprod:
     # container_name: video-party-client
@@ -74,5 +100,23 @@ services:
     #   dockerfile: Dockerfile
     container_name: serverprod
     image: index.docker.io/varungujarathi9/video-party-server:latest
+    restart: unless-stopped
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
     ports:
-      - 1793:5000
+      - 1793:443
+
+volumes:
+  certbot-etc:
+    driver: local
+    driver_opts:
+      type: none
+      device: /etc/letsencrypt
+      o: bind
+  certbot-var:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/letsencrypt
+      o: bind
