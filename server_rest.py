@@ -29,7 +29,7 @@ def get_room_id(length):
 def create_room(data):
     global rooms_details
     room_id = get_room_id(6)
-    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
+    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0,'sesDetails':data['webRtcDesc']['sdp'],'typeOfSdp':data['webRtcDesc']['type']}
     join_room(room_id)
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
@@ -51,7 +51,7 @@ def update_member_status(data):
 
 @socketIo.on('start-video')
 def start_video(room_id):
-    rooms_details[room_id]['started'] = True
+    rooms_details[room_id['room_id']]['started'] = True
     emit('video-started', broadcast=True, include_self=True, room=room_id['room_id'])
 
 @socketIo.on('video-update')
@@ -79,6 +79,13 @@ def remove_all_members(data):
     rooms_details[data['roomID']]['started'] = False
     emit('all_left',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
     leave_room(data['roomID'])
+
+
+# webrtc socket operation
+
+@socketIo.on('sdp-data')
+def sdp_Data(data):
+    emit('sdp-data-action',data,broadcast=True,include_self=False)
 
 
 
