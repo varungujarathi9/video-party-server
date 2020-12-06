@@ -17,6 +17,15 @@ services:
       - WATCHTOWER_INCLUDE_STOPPED=true
       - WATCHTOWER_REVIVE_STOPPED=true
       - WATCHTOWER_POLL_INTERVAL=60
+
+  coturn_server:
+    image: instrumentisto/coturn:4.5.1
+    restart: unless-stopped
+    network_mode: "host"
+    volumes:
+      - /etc/turnserver.conf:/etc/coturn/turnserver.conf
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
   
   # certbot:
   #   image: certbot/certbot
@@ -24,7 +33,7 @@ services:
   #   volumes:
   #     - certbot-etc:/etc/letsencrypt
   #     - certbot-var:/var/lib/letsencrypt
-  #     - web-root:/var/www/html
+  #
   #   depends_on:
   #     - clientprod
   #   command: certonly --webroot --webroot-path=/var/www/html --email v.gujarathi777@gmail.com --agree-tos --no-eff-email --force-renewal -d videoparty.tk  -d www.videoparty.tk
@@ -120,3 +129,4 @@ volumes:
       type: none
       device: /var/lib/letsencrypt
       o: bind
+
