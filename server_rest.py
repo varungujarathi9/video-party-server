@@ -29,7 +29,7 @@ def get_room_id(length):
 def create_room(data):
     global rooms_details
     room_id = get_room_id(6)
-    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0,'sesDetails':data['webRtcDesc']['sdp'],'typeOfSdp':data['webRtcDesc']['type']}
+    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0'sesDetails':None,'typeOfSdp':None}
     join_room(room_id)
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
@@ -50,9 +50,11 @@ def update_member_status(data):
     emit('update-members',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
 
 @socketIo.on('start-video')
-def start_video(room_id):
-    rooms_details[room_id['room_id']]['started'] = True
-    emit('video-started', broadcast=True, include_self=True, room=room_id['room_id'])
+def start_video(data):
+    rooms_details[data['room_id']]['started'] = True
+    rooms_details[data['room_id']]['sesDetails']=data['webRtcDesc']['sdp']
+    rooms_details[data['room_id']]['typeOfSdp']=data['webRtcDesc']['type']
+    emit('video-started',rooms_details[data['room_id']],broadcast=True, include_self=True, room=room_id['room_id'])
 
 @socketIo.on('video-update')
 def video_update(data):
