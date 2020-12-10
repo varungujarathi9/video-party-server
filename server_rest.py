@@ -46,18 +46,17 @@ def joinroom(data):
 def update_member_status(data):
     global rooms_details
     rooms_details[data['roomID']]['members'][data['username']] = data['ready']
-   
-    emit('update-room-details',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
+    emit('update-members',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
 
 @socketIo.on('start-video')
-def start_video(room_id):
-    rooms_details[room_id]['started'] = True
-    emit('video-started', broadcast=True, include_self=True, room=room_id['room_id'])
+def start_video(data):
+    rooms_details[data['room_id']]['started'] = True
+    emit('video-started',rooms_details[data['room_id']],broadcast=True, include_self=True, room=data['room_id'])
 
 @socketIo.on('video-update')
 def video_update(data):
     if(data['pauseDetails']['exited'] == True):
-        rooms_details[data['roomID']]['started'] = False
+        rooms_details[data['pauseDetails']['roomID']]['started'] = False
     emit('updated-video',data, broadcast=True, include_self=False,room=data['pauseDetails']['roomID'] )
 
 @socketIo.on('remove-member')
@@ -89,6 +88,26 @@ def send_message(data):
 def send_message(data):
     global messages
     emit('receive_message', messages[data["roomID"]], broadcast=False, include_self=True, room=data["roomID"])
+# webrtc socket operation
+
+@socketIo.on('sdp-data')
+def sdp_Data(data):
+    emit('sdp-data-action',data,broadcast=True,include_self=False)
+
+@socketIo.on('send-offer')
+def send_offer(data):
+    print('SEND OFFER', data['roomID'])
+    emit('receive-offer', {'data':data},broadcast=True, include_self=True, room=data['roomID'])
+
+@socketIo.on('send-answer')
+def send_answer(data):
+    print('SEND ANSWER', data['roomID'])
+    emit('receive-answer', {'data':data}, broadcast=True, include_self=True, room=data['roomID'])
+
+@socketIo.on('ice-candidate')
+def send_answer(data):
+    print('ICE CANDIDATE', data['roomID'])
+    emit('ice-candidate-receive', {'data':data}, broadcast=True, include_self=False, room=data['roomID'])
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
