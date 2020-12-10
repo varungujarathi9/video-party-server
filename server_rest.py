@@ -29,7 +29,7 @@ def get_room_id(length):
 def create_room(data):
     global rooms_details
     room_id = get_room_id(6)
-    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0'sesDetails':None,'typeOfSdp':None}
+    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0, 'sesDetails':None,'typeOfSdp':None}
     join_room(room_id)
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
@@ -52,16 +52,14 @@ def update_member_status(data):
 @socketIo.on('start-video')
 def start_video(data):
     rooms_details[data['room_id']]['started'] = True
-    rooms_details[data['room_id']]['sesDetails']=data['webRtcDesc']['sdp']
-    rooms_details[data['room_id']]['typeOfSdp']=data['webRtcDesc']['type']
-    emit('video-started',rooms_details[data['room_id']],broadcast=True, include_self=True, room=room_id['room_id'])
+    emit('video-started',rooms_details[data['room_id']],broadcast=True, include_self=True, room=data['room_id'])
 
 @socketIo.on('video-update')
 def video_update(data):
     print('playing: ',data['pauseDetails']['playing'])
     print('progressTime',data['pauseDetails']['progressTime'])
     if(data['pauseDetails']['exited'] == True):
-        rooms_details[data['roomID']]['started'] = False
+        rooms_details[data['pauseDetails']['roomID']]['started'] = False
     emit('updated-video',data, broadcast=True, include_self=False,room=data['pauseDetails']['roomID'] )
 
 @socketIo.on('remove-member')
@@ -89,7 +87,15 @@ def remove_all_members(data):
 def sdp_Data(data):
     emit('sdp-data-action',data,broadcast=True,include_self=False)
 
+@socketIo.on('send-offer')
+def send_offer(data):
+    print('SEND OFFER')
+    emit('receive-offer', {'sesDetails': data['webRtcDesc']['sdp'], 'typeOfSdp': data['webRtcDesc']['type']},broadcast=True, include_self=False, room=data['room_id'])
 
+@socketIo.on('send-answer')
+def send_answer(data):
+    print('SEND ANSWER')
+    emit('receive-answer', {'sesDetails': data['webRtcDesc']['sdp'], 'typeOfSdp': data['webRtcDesc']['type']}, broadcast=True, include_self=False, room=data['room_id'])
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
