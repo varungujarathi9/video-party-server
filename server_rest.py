@@ -40,7 +40,7 @@ def joinroom(data):
     
     join_room(data['roomID'])
     emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
-    emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+    emit('update-members', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
 
 @socketIo.on('update-member-status')
 def update_member_status(data):
@@ -65,7 +65,7 @@ def remove_member(data):
     rooms_details[data['roomID']]['members'].pop(data['username'])
     leave_room(data['roomID'])
     emit('left_room',rooms_details[data['roomID']])
-    emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+    emit('update-members', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
 
 
 @socketIo.on('remove-all-member')
