@@ -98,7 +98,7 @@ def send_answer(data):
 @socketIo.on('ice-candidate')
 def send_answer(data):
     print('ICE CANDIDATE', data['roomID'])
-    emit('ice-candidate-receive', {'data':data}, broadcast=True, include_self=True, room=data['roomID'])
+    emit('ice-candidate-receive', {'data':data}, broadcast=True, include_self=False, room=data['roomID'])
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
