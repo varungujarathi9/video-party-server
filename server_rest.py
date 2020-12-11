@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import string
 import random
-import datetime
+import datetime, time
 import pytz
 import json
 
@@ -97,17 +97,7 @@ def sdp_Data(data):
 @socketIo.on('send-offer')
 def send_offer(data):
     print('SEND OFFER', data['roomID'])
-    emit('receive-offer', {'data':data},broadcast=True, include_self=True, room=data['roomID'])
-
-@socketIo.on('send-answer')
-def send_answer(data):
-    print('SEND ANSWER', data['roomID'])
-    emit('receive-answer', {'data':data}, broadcast=True, include_self=True, room=data['roomID'])
-
-@socketIo.on('ice-candidate')
-def send_answer(data):
-    print('ICE CANDIDATE', data['roomID'])
-    emit('ice-candidate-receive', {'data':data}, broadcast=True, include_self=False, room=data['roomID'])
+    emit('receive-offer', {'desc':data['desc']},broadcast=True, include_self=False, room=data['roomID'])
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
