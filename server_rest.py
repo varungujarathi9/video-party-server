@@ -90,9 +90,6 @@ def send_message(data):
     emit('receive_message', messages[data["roomID"]], broadcast=False, include_self=True, room=data["roomID"])
 # webrtc socket operation
 
-@socketIo.on('sdp-data')
-def sdp_Data(data):
-    emit('sdp-data-action',data,broadcast=True,include_self=False)
 
 @socketIo.on('send-offer')
 def send_offer(data):
