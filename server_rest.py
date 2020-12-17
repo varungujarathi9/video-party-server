@@ -88,12 +88,10 @@ def send_message(data):
 def send_message(data):
     global messages
     emit('receive_message', messages[data["roomID"]], broadcast=False, include_self=True, room=data["roomID"])
+
 # webrtc socket operation
-
-
 @socketIo.on('send-offer')
 def send_offer(data):
-    print('SEND OFFER', data['roomID'])
     emit('receive-offer', {'desc':data['desc']},broadcast=True, include_self=False, room=data['roomID'])
 
 if __name__ == '__main__':
