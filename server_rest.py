@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 import json
 import string
 import random
-import datetime
+import datetime, time
 import pytz
 import json
 
@@ -46,18 +46,17 @@ def joinroom(data):
 def update_member_status(data):
     global rooms_details
     rooms_details[data['roomID']]['members'][data['username']] = data['ready']
-   
     emit('update-room-details',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
 
 @socketIo.on('start-video')
-def start_video(room_id):
-    rooms_details[room_id]['started'] = True
-    emit('video-started', broadcast=True, include_self=True, room=room_id['room_id'])
+def start_video(data):
+    rooms_details[data['room_id']]['started'] = True
+    emit('video-started',rooms_details[data['room_id']],broadcast=True, include_self=True, room=data['room_id'])
 
 @socketIo.on('video-update')
 def video_update(data):
     if(data['pauseDetails']['exited'] == True):
-        rooms_details[data['roomID']]['started'] = False
+        rooms_details[data['pauseDetails']['roomID']]['started'] = False
     emit('updated-video',data, broadcast=True, include_self=False,room=data['pauseDetails']['roomID'] )
 
 @socketIo.on('remove-member')
@@ -83,12 +82,18 @@ def send_message(data):
     data["timestamp"] = datetime.datetime.now(tz=timezone).strftime('%x @ %X')
     data["messageNumber"] = len(messages[data["roomID"]]) + 1
     messages[data["roomID"]].append(data)
+    # TODO: delete messages if room is deleted
     emit('receive_message', messages[data["roomID"]], broadcast=True, include_self=True, room=data["roomID"])
 
 @socketIo.on('get-all-messages')
 def send_message(data):
     global messages
     emit('receive_message', messages[data["roomID"]], broadcast=False, include_self=True, room=data["roomID"])
+
+# webrtc socket operation
+@socketIo.on('send-offer')
+def send_offer(data):
+    emit('receive-offer', {'desc':data['desc']},broadcast=True, include_self=False, room=data['roomID'])
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
