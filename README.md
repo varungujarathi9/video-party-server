@@ -36,3 +36,4 @@ Watch downloaded videos together with friends &amp; family
 0.4 start video play/pause video
 0.5 ssl certificate with nginx as proxy
 0.6 chat function added
+0.7 video streaming working
