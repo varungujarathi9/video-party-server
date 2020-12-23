@@ -83,6 +83,7 @@ def send_message(data):
     data["timestamp"] = datetime.datetime.now(tz=timezone).strftime('%x @ %X')
     data["messageNumber"] = len(messages[data["roomID"]]) + 1
     messages[data["roomID"]].append(data)
+    # TODO: delete messages if room is deleted
     emit('receive_message', messages[data["roomID"]], broadcast=True, include_self=True, room=data["roomID"])
 
 @socketIo.on('get-all-messages')
