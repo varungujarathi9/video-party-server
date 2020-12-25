@@ -37,7 +37,7 @@ def create_room(data):
 def joinroom(data):
     global rooms_details
     rooms_details[data['roomID']]['members'][data['username']] = False
-    
+
     join_room(data['roomID'])
     emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
     emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
@@ -93,7 +93,11 @@ def send_message(data):
 # webrtc socket operation
 @socketIo.on('send-offer')
 def send_offer(data):
-    emit('receive-offer', {'desc':data['desc']},broadcast=True, include_self=False, room=data['roomID'])
+    emit('receive-offer', data, broadcast=True, include_self=False, room=data['roomID'])
+
+@socketIo.on('send-answer')
+def send_answer(data):
+    emit('receive-answer', data, broadcast=True, include_self=False, room=data['roomID'])
 
 if __name__ == '__main__':
     #automatic reloads again when made some changes
