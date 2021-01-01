@@ -1,5 +1,0 @@
-{
-    "ENVIRONMENT_TYPE" : "Prod",
-    "SERVER" : "wss://videoparty.tk:1793",
-    "CLIENT" : "http://35.223.15.12"
-}
