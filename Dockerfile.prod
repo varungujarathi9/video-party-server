@@ -1,7 +1,6 @@
 FROM ubuntu:18.04
 COPY . /server
 WORKDIR /server
-RUN cp configs.prod.json configs.json
 RUN apt-get update
 RUN apt-get install nginx gcc python3 python3-pip python3-dev -y
 RUN pip3 install -r requirements.txt
