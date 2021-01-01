@@ -14,3 +14,5 @@
 0.5 ssl certificate with nginx as proxy
 0.6 chat function added
 0.7 video streaming working
+0.8 Multipeer streaming done
+0.9 Socket reconnection checking
