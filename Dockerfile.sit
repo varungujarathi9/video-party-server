@@ -12,9 +12,6 @@ RUN pip3 install -r requirements.txt
 # add app
 COPY . ./
 
-# replace config file
-RUN cp configs.sit.json configs.json
-
 EXPOSE 5000
 # start app
 CMD ["python3", "server_rest.py"]
