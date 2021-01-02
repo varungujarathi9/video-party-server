@@ -1,12 +1,9 @@
-from flask import Flask,request,redirect,current_app, jsonify
+from flask import Flask
 from flask_socketio import SocketIO, emit, join_room, leave_room
-import json
 import string
 import random
-import datetime, time
-import flask_socketio
+import datetime
 import pytz
-import json
 
 #instantiate
 app = Flask(__name__)
@@ -53,8 +50,6 @@ def rejoin_creator(data):
     messages[room_id] = []
     join_room(room_id)
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
-    
-
 
 @socketIo.on('join-room')
 def joinroom(data):
