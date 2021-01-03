@@ -5,6 +5,8 @@ import random
 import datetime
 import pytz
 
+#exception handling for each function 
+
 #instantiate
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'videoparty100'
@@ -34,6 +36,8 @@ def disconnection_event():
 def create_room(data):
     global rooms_details
     room_id = get_room_id(6)
+    while(room_id in rooms_details.keys()):
+        room_id = get_room_id(6)
     rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False}
     messages[room_id] = []
     print(rooms_details)
@@ -54,11 +58,17 @@ def rejoin_creator(data):
 @socketIo.on('join-room')
 def joinroom(data):
     global rooms_details
-    rooms_details[data['roomID']]['members'][data['username']] = False
-    print(rooms_details)
-    join_room(data['roomID'])
-    emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
-    emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+    if(data['roomID'] in rooms_details.keys()):
+        rooms_details[data['roomID']]['members'][data['username']] = False
+        print(rooms_details)
+        join_room(data['roomID'])
+        emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
+        emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+    else:
+        #print('\n room not found \n')
+        emit('login-error',{'msg':'Invalid Room I.D. !! Please check again'})
+
+
 
 @socketIo.on('rejoin-joinee')
 def rejoin_creator(data):
