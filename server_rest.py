@@ -4,13 +4,13 @@ import string
 import random
 import datetime
 import pytz
-
+import logging as log
 #exception handling for each function 
 
 #instantiate
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'videoparty100'
-
+log.basicConfig(filename="record.log",filemode='w',format ='%(asctime)s - %(name)s - %(message)s',level=log.INFO)
 #wrapping flask instance with the socketio wrapper
 socketIo = SocketIO(app,cors_allowed_origins="*")
 
@@ -27,10 +27,13 @@ def get_room_id(length):
 @socketIo.on('connect')
 def connection_event():
     print("socket is connected")
+    #logger can be called here with room id
 
 @socketIo.on('disconnect')
 def disconnection_event():
     print("server is disconnected")
+    #logger can be called here with room id
+
 
 @socketIo.on('create-room')
 def create_room(data):
@@ -40,8 +43,9 @@ def create_room(data):
         room_id = get_room_id(6)
     rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False}
     messages[room_id] = []
-    print(rooms_details)
+    #print(rooms_details)
     join_room(room_id)
+    log.info("%s--room created by %s",room_id,data['username'])
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
 @socketIo.on('rejoin-creator')
@@ -53,6 +57,7 @@ def rejoin_creator(data):
     rooms_details[room_id] = {'members':{data['creator_name']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
     messages[room_id] = []
     join_room(room_id)
+    #log.info("rejoined creator")
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
 @socketIo.on('join-room')
@@ -64,9 +69,11 @@ def joinroom(data):
         join_room(data['roomID'])
         emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
         emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+        log.info("%s joined room %s",data['roomID'],data['username'])
     else:
         #print('\n room not found \n')
         emit('login-error',{'msg':'Invalid Room I.D. !! Please check again'})
+        log.warning("--room not found --")
 
 
 
@@ -87,7 +94,7 @@ def update_member_status(data):
     global rooms_details
     rooms_details[data['roomID']]['members'][data['username']] = data['ready']
     emit('update-room-details',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
-
+    
 @socketIo.on('start-video')
 def start_video(data):
     rooms_details[data['room_id']]['started'] = True
