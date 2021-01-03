@@ -1,5 +1,0 @@
-{
-    "ENVIRONMENT_TYPE" : "UAT",
-    "SERVER" : "wss://videoparty.tk:5002",
-    "CLIENT" : "http://35.223.15.12:3002"
-}

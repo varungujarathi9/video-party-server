@@ -4,6 +4,7 @@ import json
 import string
 import random
 import datetime, time
+import flask_socketio
 import pytz
 import json
 
@@ -36,16 +37,21 @@ def create_room(data):
 @socketIo.on('join-room')
 def joinroom(data):
     global rooms_details
-    rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
-    join_room(data['roomID'])
-    emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
-    emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+   
 
-@socketIo.on('update-member-status')
-def update_member_status(data):
-    global rooms_details
-    rooms_details[data['roomID']]['members'][data['username']] = data['ready']
-    emit('update-room-details',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
+    if(rooms_details[data['roomID']]["started"] == True):
+        emit('login-error', {"msg": "The room cannot accept new member right now!! Come back later"})
+
+    else:
+        rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
+        join_room(data['roomID'])
+        emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
+        emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+
+@socketIo.on('start-video')
+def start_video(data):
+    rooms_details[data['room_id']]['started'] = True
+    emit('video-started',rooms_details[data['room_id']],broadcast=True, include_self=True, room=data['room_id'])
 
 @socketIo.on('start-video')
 def start_video(data):
