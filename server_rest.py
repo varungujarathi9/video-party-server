@@ -28,7 +28,7 @@ def get_room_id(length):
 def create_room(data):
     global rooms_details
     room_id = get_room_id(6)
-    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
+    rooms_details[room_id] = {'members':{data['username']:data['avatarname']},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
     messages[room_id] = []
     join_room(room_id)
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
@@ -36,8 +36,7 @@ def create_room(data):
 @socketIo.on('join-room')
 def joinroom(data):
     global rooms_details
-    rooms_details[data['roomID']]['members'][data['username']] = False
-
+    rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
     join_room(data['roomID'])
     emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
     emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
