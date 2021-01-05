@@ -34,7 +34,7 @@ def disconnection_event():
 def create_room(data):
     global rooms_details
     room_id = get_room_id(6)
-    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False}
+    rooms_details[room_id] = {'members':{data['username']:data['avatarname']},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
     messages[room_id] = []
     print(rooms_details)
     join_room(room_id)
@@ -54,11 +54,15 @@ def rejoin_creator(data):
 @socketIo.on('join-room')
 def joinroom(data):
     global rooms_details
-    rooms_details[data['roomID']]['members'][data['username']] = False
-    print(rooms_details)
-    join_room(data['roomID'])
-    emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
-    emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+
+    if(rooms_details[data['roomID']]["started"] == True):
+        emit('login-error', {"msg": "The room cannot accept new member right now!! Come back later"})
+
+    else:
+        rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
+        join_room(data['roomID'])
+        emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
+        emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
 
 @socketIo.on('rejoin-joinee')
 def rejoin_creator(data):
