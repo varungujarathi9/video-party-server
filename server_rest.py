@@ -64,7 +64,7 @@ def rejoin_creator(data):
 def joinroom(data):
     global rooms_details
     if(data['roomID'] in rooms_details.keys()):
-        rooms_details[data['roomID']]['members'][data['username']] = False
+        rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
         print(rooms_details)
         join_room(data['roomID'])
         emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
