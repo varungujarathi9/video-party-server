@@ -4,4 +4,4 @@ nohup.out
 __pycache__/server_rest.cpython-36.pyc
 __pycache__/gunicorn_config.cpython-36.pyc
 __pycache__/server_prod.cpython-36.pyc
-
+*.log
