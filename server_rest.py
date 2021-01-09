@@ -48,50 +48,34 @@ def create_room(data):
     log.info("%s--room created by %s",room_id,data['username'])
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
 
-@socketIo.on('rejoin-creator')
-def rejoin_creator(data):
-    global rooms_details
-    print("48",rooms_details)
-    room_id= data['id']
-    print(data)
-    rooms_details[room_id] = {'members':{data['creator_name']:data['avatarname']},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
-    messages[room_id] = []
-    join_room(room_id)
-    #log.info("rejoined creator")
-    emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
-
 @socketIo.on('join-room')
 def joinroom(data):
     global rooms_details
-
-    if(rooms_details[data['roomID']]["started"] == True):
-        emit('login-error', {"msg": "The room cannot accept new member right now!! Come back later"})
-
     if(data['roomID'] in rooms_details.keys()):
-        rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
-        print(rooms_details)
-        join_room(data['roomID'])
-        emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
-        emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
-        log.info("%s joined room %s",data['roomID'],data['username'])
+        if(rooms_details[data['roomID']]["started"] == True):
+            emit('login-error', {"msg": "The room cannot accept new member right now!! Come back later"})
+        else:
+            rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
+            join_room(data['roomID'])
+            emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
+            emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+            log.info("%s joined room %s",data['roomID'],data['username'])
     else:
         #print('\n room not found \n')
         emit('login-error',{'msg':'Invalid Room I.D. !! Please check again'})
-        log.warning("--room not found --")
+        log.warning("--room not found -- %s", data['roomID'])
 
-
-
-@socketIo.on('rejoin-joinee')
+@socketIo.on('rejoin-room')
 def rejoin_creator(data):
     global rooms_details
-    print("70",rooms_details)
-    room_id= data['id']
-    print(data)
-    rooms_details[data['id']]['members'][data['joinee_name']] = data['avatarname']
-    print(rooms_details)
-    join_room(data['id'])
-    emit('room-joined', {'room-id':data['id'], 'room-details':rooms_details[data['roomID']]})
-    emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
+    if(data['roomID'] in rooms_details.keys()):
+        log.info("%s re-joined room %s",data['roomID'],data['username'])
+        join_room(data['roomID'])
+        emit('update-room-details', rooms_details[data['roomID']])
+        emit('receive_message', messages[data["roomID"]])
+    else:
+        log.warning("--room not found -- %s", data['roomID'])
+        emit('left_room',{})
 
 @socketIo.on('update-member-status')
 def update_member_status(data):
@@ -126,6 +110,8 @@ def remove_all_members(data):
     rooms_details[data['roomID']]['started'] = False
     emit('all_left',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
     leave_room(data['roomID'])
+    if(len(rooms_details[data['roomID']][members]) == 0):
+        del rooms_details[data['roomID']]
 
 @socketIo.on('send-message')
 def send_message(data):
@@ -139,6 +125,7 @@ def send_message(data):
 @socketIo.on('get-all-messages')
 def send_message(data):
     global messages
+    print(messages)
     emit('receive_message', messages[data["roomID"]], broadcast=False, include_self=True, room=data["roomID"])
 
 # webrtc socket operation
