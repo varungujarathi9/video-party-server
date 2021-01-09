@@ -5,7 +5,7 @@ import random
 import datetime
 import pytz
 import logging as log
-#exception handling for each function 
+#exception handling for each function
 
 #instantiate
 app = Flask(__name__)
@@ -41,7 +41,7 @@ def create_room(data):
     room_id = get_room_id(6)
     while(room_id in rooms_details.keys()):
         room_id = get_room_id(6)
-    rooms_details[room_id] = {'members':{data['username']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False}
+    rooms_details[room_id] = {'members':{data['username']:data['avatarname']},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False}
     messages[room_id] = []
     #print(rooms_details)
     join_room(room_id)
@@ -54,7 +54,7 @@ def rejoin_creator(data):
     print("48",rooms_details)
     room_id= data['id']
     print(data)
-    rooms_details[room_id] = {'members':{data['creator_name']:True},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
+    rooms_details[room_id] = {'members':{data['creator_name']:data['avatarname']},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False, 'video_name': None, 'paused':True, 'playing_at':0, 'total_duration': 0}
     messages[room_id] = []
     join_room(room_id)
     #log.info("rejoined creator")
@@ -83,7 +83,7 @@ def rejoin_creator(data):
     print("70",rooms_details)
     room_id= data['id']
     print(data)
-    rooms_details[data['id']]['members'][data['joinee_name']] = False
+    rooms_details[data['id']]['members'][data['joinee_name']] = data['avatarname']
     print(rooms_details)
     join_room(data['id'])
     emit('room-joined', {'room-id':data['id'], 'room-details':rooms_details[data['roomID']]})
@@ -94,7 +94,7 @@ def update_member_status(data):
     global rooms_details
     rooms_details[data['roomID']]['members'][data['username']] = data['ready']
     emit('update-room-details',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
-    
+
 @socketIo.on('start-video')
 def start_video(data):
     rooms_details[data['room_id']]['started'] = True
