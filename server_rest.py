@@ -18,6 +18,7 @@ timezone = pytz.timezone('Asia/Kolkata')
 
 rooms_details = {}
 messages = {}
+avatar_color = ["yellow", "green", "cyan", "marron", "magenta", "pink", "purple", "blue", "orange", "red"]
 
 def get_room_id(length):
     letters_and_digits = string.ascii_uppercase + string.digits
@@ -41,9 +42,10 @@ def create_room(data):
     room_id = get_room_id(6)
     while(room_id in rooms_details.keys()):
         room_id = get_room_id(6)
-    rooms_details[room_id] = {'members':{data['username']:data['avatarname']},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False}
+    rooms_details[room_id] = {'members':{data['username']:avatar_color[random.randint(0,9)]},'created_at':datetime.datetime.now(tz=timezone).strftime('%x @ %X'), 'started':False}
     messages[room_id] = []
-    #print(rooms_details)
+    messages[room_id].append({"senderName":"<$%^", "message":data['username'] + " created room", "messageNumber":len(messages[room_id]) + 1, "timestamp": datetime.datetime.now(tz=timezone).strftime('%I:%M %p')})
+
     join_room(room_id)
     log.info("%s--room created by %s",room_id,data['username'])
     emit('room-created', {'room-id':room_id, 'room-details':rooms_details[room_id]})
@@ -55,26 +57,29 @@ def joinroom(data):
         if(rooms_details[data['roomID']]["started"] == True):
             emit('login-error', {"msg": "The room cannot accept new member right now!! Come back later"})
         else:
-            rooms_details[data['roomID']]['members'][data['username']] = data['avatarname']
+            rooms_details[data['roomID']]['members'][data['username']] = avatar_color[random.randint(0,9)]
+            messages[data['roomID']].append({"senderName":"<$%^", "message":data['username'] + " joined", "messageNumber":len(messages[data["roomID"]]) + 1, "timestamp": datetime.datetime.now(tz=timezone).strftime('%I:%M %p')})
+
             join_room(data['roomID'])
             emit('room-joined', {'room-id':data['roomID'], 'room-details':rooms_details[data['roomID']]})
             emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
             log.info("%s joined room %s",data['roomID'],data['username'])
     else:
-        #print('\n room not found \n')
         emit('login-error',{'msg':'Invalid Room I.D. !! Please check again'})
-        log.warning("--room not found -- %s", data['roomID'])
+        log.warning("--room not found in join room -- %s", data['roomID'])
 
 @socketIo.on('rejoin-room')
 def rejoin_creator(data):
     global rooms_details
     if(data['roomID'] in rooms_details.keys()):
         log.info("%s re-joined room %s",data['roomID'],data['username'])
+        messages[data['roomID']].append({"senderName":"<$%^", "message":data['username'] + " re-joined", "messageNumber":len(messages[data["roomID"]]) + 1, "timestamp": datetime.datetime.now(tz=timezone).strftime('%I:%M %p')})
+
         join_room(data['roomID'])
         emit('update-room-details', rooms_details[data['roomID']])
         emit('receive_message', messages[data["roomID"]])
     else:
-        log.warning("--room not found -- %s", data['roomID'])
+        log.warning("--room not found rejoin room -- %s", data['roomID'])
         emit('left_room',{})
 
 @socketIo.on('update-member-status')
@@ -99,6 +104,8 @@ def remove_member(data):
     global rooms_details
     rooms_details[data['roomID']]['members'].pop(data['username'])
     leave_room(data['roomID'])
+    messages[data['roomID']].append({"senderName":"<$%^", "message":data['username'] + " left", "messageNumber":len(messages[data["roomID"]]) + 1, "timestamp": datetime.datetime.now(tz=timezone).strftime('%I:%M %p')})
+
     emit('left_room',rooms_details[data['roomID']])
     emit('update-room-details', rooms_details[data['roomID']], broadcast=True, include_self=False,room=data['roomID'])
 
@@ -110,13 +117,13 @@ def remove_all_members(data):
     rooms_details[data['roomID']]['started'] = False
     emit('all_left',rooms_details[data['roomID']],broadcast=True, include_self=True, room=data['roomID'])
     leave_room(data['roomID'])
-    if(len(rooms_details[data['roomID']][members]) == 0):
+    if(len(rooms_details[data['roomID']]["members"]) == 0):
         del rooms_details[data['roomID']]
 
 @socketIo.on('send-message')
 def send_message(data):
     global messages
-    data["timestamp"] = datetime.datetime.now(tz=timezone).strftime('%x @ %X')
+    data["timestamp"] = datetime.datetime.now(tz=timezone).strftime('%I:%M %p')
     data["messageNumber"] = len(messages[data["roomID"]]) + 1
     messages[data["roomID"]].append(data)
     # TODO: delete messages if room is deleted
@@ -125,7 +132,6 @@ def send_message(data):
 @socketIo.on('get-all-messages')
 def send_message(data):
     global messages
-    print(messages)
     emit('receive_message', messages[data["roomID"]], broadcast=False, include_self=True, room=data["roomID"])
 
 # webrtc socket operation
