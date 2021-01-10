@@ -18,7 +18,7 @@ timezone = pytz.timezone('Asia/Kolkata')
 
 rooms_details = {}
 messages = {}
-avatar_color = ["yellow", "green", "cyan", "marron", "magenta", "pink", "purple", "blue", "orange", "red"]
+avatar_color = ["yellow", "green", "cyan", "maroon", "magenta", "pink", "purple", "blue", "orange", "red"]
 
 def get_room_id(length):
     letters_and_digits = string.ascii_uppercase + string.digits
