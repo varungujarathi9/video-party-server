@@ -24,20 +24,20 @@ jobs:
         run: docker login -u=${{ secrets.DOCKER_USERNAME }} -p=${{ secrets.DOCKER_PASSWORD }}
       - name: Push the Docker image
         run: docker push varungujarathi9/video-party-server:latest
-      - uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
-          custom_payload: |
-            {
-              username: 'action-slack',
-              icon_emoji: ':octocat:',
-              attachments: [{
-                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${{github.repository}}\n${process.env.AS_WORKFLOW}\nJob status : ${{ job.status }}`,
-              }]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} # required
-        if: always() # Pick up events even if the job fails or is canceled.
+      # - uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: custom
+      #     fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
+      #     custom_payload: |
+      #       {
+      #         username: 'action-slack',
+      #         icon_emoji: ':octocat:',
+      #         attachments: [{
+      #           color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+      #           text: `${{github.repository}}\n${process.env.AS_WORKFLOW}\nJob status : ${{ job.status }}`,
+      #         }]
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} # required
+      #   if: always() # Pick up events even if the job fails or is canceled.
 
