@@ -5,6 +5,7 @@ import random
 import datetime
 import pytz
 import logging as log
+import os
 #exception handling for each function
 
 #instantiate
@@ -147,7 +148,7 @@ if __name__ == '__main__':
     #automatic reloads again when made some changes
     app.debug=True
     # use this while running in gcp server
-    socketIo.run(app, host='0.0.0.0')
+    socketIo.run(app, host='0.0.0.0', port=os.environ['PORT'])
 # from flask import Flask
 # app = Flask(__name__)
 
