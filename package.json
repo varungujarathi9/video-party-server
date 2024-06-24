@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "express": "^4.19.2",
+    "moment-timezone": "^0.5.45",
+    "randomcolor": "^0.6.2",
+    "socket-io": "^1.0.0",
+    "socket.io": "^4.7.5",
+    "uuid": "^10.0.0",
+    "winston": "^3.13.0"
+  }
+}
