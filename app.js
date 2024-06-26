@@ -55,7 +55,6 @@ io.on("connection", (socket) => {
 
   // Join Existing Room
   socket.on("join", (data) => {
-    console.log("join");
     const { roomId, username } = data;
     if (roomId in roomsDetails) {
       socket.join(roomId);
@@ -72,6 +71,7 @@ io.on("connection", (socket) => {
         "room-details": roomsDetails[roomId],
         joinMsg,
       });
+      io.to(roomId).emit("update-room-details", roomsDetails[roomId]);
       console.info(`${username} joined room ${roomId}`);
     } else {
       socket.emit("error-joining", { message: "Room does not exist." });
@@ -128,7 +128,7 @@ io.on("connection", (socket) => {
         senderName: "<$%^",
         message: `${data.username} re-joined`,
         messageNumber: messages[roomId].length + 1,
-        timestamp: moment.tz(timezone).format("LT"),
+        timestamp: moment.tz("Asia/Kolkata").format("LT"),
       });
 
       socket.join(roomId);
