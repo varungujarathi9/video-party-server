@@ -1,22 +1,9 @@
-const express = require("express");
-const http = require("http");
-const socketIo = require("socket.io");
+const { Server } = require("socket.io");
 const moment = require("moment-timezone");
 const { v4: uuidv4 } = require("uuid");
-const randomColor = require("randomcolor"); // For generating random avatar colors
-const winston = require("winston");
+const randomColor = require("randomcolor");
 
-// Setup logger
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.simple(),
-  transports: [new winston.transports.File({ filename: "record.log" })],
-});
-
-// Initialize Express and HTTP server
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
+const io = new Server({
   cors: {
     origin: "*",
   },
@@ -37,15 +24,9 @@ function getRoomId(length) {
   return result;
 }
 
-// Socket.io connection
 io.on("connection", (socket) => {
-  logger.info("socket is connected");
-
-  socket.on("disconnect", () => {
-    logger.info("server is disconnected");
-  });
-
-  socket.on("create-room", (data) => {
+  // Create Room
+  socket.on("create", (data) => {
     let roomId = getRoomId(6);
     while (roomsDetails[roomId]) {
       roomId = getRoomId(6);
@@ -65,17 +46,18 @@ io.on("connection", (socket) => {
     });
 
     socket.join(roomId);
-    logger.info(`${roomId}--room created by ${data.username}`);
-    io.to(roomId).emit("room-created", {
+    console.info(`${roomId}--room created by ${data.username}`);
+    io.to(roomId).emit("created", {
       "room-id": roomId,
       "room-details": roomsDetails[roomId],
     });
   });
 
-  // Join-room event handler
-  socket.on("join-room", (data) => {
+  // Join Existing Room
+  socket.on("join", (data) => {
+    console.log("join");
     const { roomId, username } = data;
-    if (roomsDetails[roomId]) {
+    if (roomId in roomsDetails) {
       socket.join(roomId);
       roomsDetails[roomId].members[username] = randomColor(); // Assign a random color for the user
       const joinMsg = {
@@ -85,12 +67,12 @@ io.on("connection", (socket) => {
         timestamp: moment.tz("Asia/Kolkata").format("hh:mm A"),
       };
       messages[roomId].push(joinMsg);
-      io.to(roomId).emit("user-joined", {
+      io.to(roomId).emit("joined", {
         username,
         "room-details": roomsDetails[roomId],
         joinMsg,
       });
-      logger.info(`${username} joined room ${roomId}`);
+      console.info(`${username} joined room ${roomId}`);
     } else {
       socket.emit("error-joining", { message: "Room does not exist." });
     }
@@ -108,7 +90,7 @@ io.on("connection", (socket) => {
       };
       messages[roomId].push(msg);
       io.to(roomId).emit("new-message", msg);
-      logger.info(`Message from ${username} in room ${roomId}: ${message}`);
+      console.info(`Message from ${username} in room ${roomId}: ${message}`);
     } else {
       socket.emit("error-sending", { message: "Room does not exist." });
     }
@@ -132,18 +114,95 @@ io.on("connection", (socket) => {
         "room-details": roomsDetails[roomId],
         leaveMsg,
       });
-      logger.info(`${username} left room ${roomId}`);
+      console.info(`${username} left room ${roomId}`);
     } else {
       socket.emit("error-leaving", { message: "Error leaving the room." });
     }
   });
 
-  // Handling socket disconnection
-  socket.on("disconnect", () => {
-    logger.info("User disconnected");
+  socket.on("rejoin-room", (data) => {
+    const roomId = data.roomID;
+    if (roomsDetails[roomId]) {
+      log(`${data.username} re-joined room ${roomId}`);
+      messages[roomId].push({
+        senderName: "<$%^",
+        message: `${data.username} re-joined`,
+        messageNumber: messages[roomId].length + 1,
+        timestamp: moment.tz(timezone).format("LT"),
+      });
+
+      socket.join(roomId);
+      socket.emit("update-room-details", roomsDetails[roomId]);
+      socket.emit("receive_message", messages[roomId]);
+    } else {
+      console.log(`--room not found rejoin room -- ${roomId}`);
+      socket.emit("left_room", {});
+    }
+  });
+
+  socket.on("update-member-status", (data) => {
+    roomsDetails[data.roomID].members[data.username] = data.ready;
+    io.to(data.roomID).emit("update-room-details", roomsDetails[data.roomID]);
+  });
+
+  socket.on("start-video", (data) => {
+    roomsDetails[data.room_id].started = true;
+    io.to(data.room_id).emit("video-started", roomsDetails[data.room_id]);
+  });
+
+  socket.on("video-update", (data) => {
+    if (data.pauseDetails.exited) {
+      roomsDetails[data.pauseDetails.roomID].started = false;
+    }
+    io.to(data.pauseDetails.roomID).emit("updated-video", data);
+  });
+
+  socket.on("remove-member", (data) => {
+    const roomId = data.roomID;
+    delete roomsDetails[roomId].members[data.username];
+    socket.leave(roomId);
+    messages[roomId].push({
+      senderName: "<$%^",
+      message: `${data.username} left`,
+      messageNumber: messages[roomId].length + 1,
+      timestamp: moment.tz(timezone).format("LT"),
+    });
+
+    socket.emit("left_room", roomsDetails[roomId]);
+    io.to(roomId).emit("update-room-details", roomsDetails[roomId]);
+  });
+
+  socket.on("remove-all-member", (data) => {
+    const roomId = data.roomID;
+    roomsDetails[roomId].members = {};
+    roomsDetails[roomId].started = false;
+    io.to(roomId).emit("all_left", roomsDetails[roomId]);
+    socket.leave(roomId);
+    if (Object.keys(roomsDetails[roomId].members).length === 0) {
+      delete roomsDetails[roomId];
+    }
+  });
+
+  socket.on("send-message", (data) => {
+    data.timestamp = moment.tz("Asia/Kolkata").format("LT");
+    data.messageNumber = messages[data.roomID].length + 1;
+    messages[data.roomID].push(data);
+
+    io.to(data.roomID).emit("receive_message", messages[data.roomID]);
+  });
+
+  socket.on("get-all-messages", (data) => {
+    socket.emit("receive_message", messages[data.roomID]);
+  });
+
+  // webrtc socket operations
+  socket.on("send-offer", (data) => {
+    io.to(data.roomID).emit("receive-offer", data);
+  });
+
+  socket.on("send-answer", (data) => {
+    io.to(data.roomID).emit("receive-answer", data);
   });
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+io.listen(8000);
