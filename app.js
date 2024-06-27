@@ -220,8 +220,27 @@ io.on("connection", (socket) => {
 const server = http.createServer();
 // endpoint at / for checking server status
 server.on("request", (req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ status: "Server is running" }));
+  // Set CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Allow any origin
+  res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET"); // Allowed methods
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type"); // Allowed headers
+
+  // Handle pre-flight requests for CORS
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  // Continue with the original handler for GET requests
+  if (req.url === "/" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "Server is running" }));
+  } else {
+    // Respond with 404 for other routes or methods
+    res.writeHead(404);
+    res.end();
+  }
 });
 
 io.attach(server);
