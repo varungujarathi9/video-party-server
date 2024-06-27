@@ -1,6 +1,6 @@
 const { Server } = require("socket.io");
 const moment = require("moment-timezone");
-const { v4: uuidv4 } = require("uuid");
+const http = require("http");
 const randomColor = require("randomcolor");
 
 const io = new Server({
@@ -216,6 +216,15 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(process.env.PORT || 8000, {
-  host: "0.0.0.0",
+// Start the server
+const server = http.createServer();
+// endpoint at / for checking server status
+server.on("request", (req, res) => {
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ status: "Server is running" }));
+});
+
+io.attach(server);
+server.listen(process.env.PORT || 8000, () => {
+  console.log("Server listening on port 8000");
 });
