@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
       members: { [data.username]: randomColor() },
       createdAt,
       started: false,
+      creator: data.username,
     };
     messages[roomId] = [];
     messages[roomId].push({
@@ -101,7 +102,11 @@ io.on("connection", (socket) => {
     const { roomId, username } = data;
     if (roomsDetails[roomId] && roomsDetails[roomId].members[username]) {
       socket.leave(roomId);
-      delete roomsDetails[roomId].members[username];
+      try {
+        delete roomsDetails[roomId].members[username];
+      } catch (e) {
+        console.log(e);
+      }
       const leaveMsg = {
         senderName: "<$%^",
         message: `${username} left the room`,
@@ -121,9 +126,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("rejoin-room", (data) => {
-    const roomId = data.roomID;
+    const roomId = data.roomId;
     if (roomsDetails[roomId]) {
-      log(`${data.username} re-joined room ${roomId}`);
+      console.log(`${data.username} re-joined room ${roomId}`);
       messages[roomId].push({
         senderName: "<$%^",
         message: `${data.username} re-joined`,
@@ -141,39 +146,45 @@ io.on("connection", (socket) => {
   });
 
   socket.on("update-member-status", (data) => {
-    roomsDetails[data.roomID].members[data.username] = data.ready;
-    io.to(data.roomID).emit("update-room-details", roomsDetails[data.roomID]);
+    roomsDetails[data.roomId].members[data.username] = data.ready;
+    io.to(data.roomId).emit("update-room-details", roomsDetails[data.roomId]);
   });
 
   socket.on("start-video", (data) => {
-    roomsDetails[data.room_id].started = true;
-    io.to(data.room_id).emit("video-started", roomsDetails[data.room_id]);
+    roomsDetails[data.roomId].started = true;
+    io.to(data.roomId).emit("video-started", roomsDetails[data.roomId]);
   });
 
   socket.on("video-update", (data) => {
-    if (data.pauseDetails.exited) {
-      roomsDetails[data.pauseDetails.roomID].started = false;
+    if (roomsDetails[data.pauseDetails.roomId] && data.pauseDetails.exited) {
+      roomsDetails[data.pauseDetails.roomId].started = false;
     }
-    io.to(data.pauseDetails.roomID).emit("updated-video", data);
+    io.to(data.pauseDetails.roomId).emit("updated-video", data);
   });
 
   socket.on("remove-member", (data) => {
-    const roomId = data.roomID;
-    delete roomsDetails[roomId].members[data.username];
-    socket.leave(roomId);
-    messages[roomId].push({
-      senderName: "<$%^",
-      message: `${data.username} left`,
-      messageNumber: messages[roomId].length + 1,
-      timestamp: moment.tz(timezone).format("LT"),
-    });
+    const { roomId, username } = data;
+    if (roomsDetails[roomId] && roomsDetails[roomId].members[username]) {
+      try {
+        delete roomsDetails[roomId].members[username];
+      } catch (e) {
+        console.log(e);
+      }
+      socket.leave(roomId);
+      messages[roomId].push({
+        senderName: "<$%^",
+        message: `${data.username} left`,
+        messageNumber: messages[roomId].length + 1,
+        timestamp: moment.tz("Asia/Kolkata").format("LT"),
+      });
 
-    socket.emit("left_room", roomsDetails[roomId]);
-    io.to(roomId).emit("update-room-details", roomsDetails[roomId]);
+      socket.emit("left_room", roomsDetails[roomId]);
+      io.to(roomId).emit("update-room-details", roomsDetails[roomId]);
+    }
   });
 
   socket.on("remove-all-member", (data) => {
-    const roomId = data.roomID;
+    const roomId = data.roomId;
     roomsDetails[roomId].members = {};
     roomsDetails[roomId].started = false;
     io.to(roomId).emit("all_left", roomsDetails[roomId]);
@@ -185,24 +196,26 @@ io.on("connection", (socket) => {
 
   socket.on("send-message", (data) => {
     data.timestamp = moment.tz("Asia/Kolkata").format("LT");
-    data.messageNumber = messages[data.roomID].length + 1;
-    messages[data.roomID].push(data);
+    data.messageNumber = messages[data.roomId].length + 1;
+    messages[data.roomId].push(data);
 
-    io.to(data.roomID).emit("receive_message", messages[data.roomID]);
+    io.to(data.roomId).emit("receive_message", messages[data.roomId]);
   });
 
   socket.on("get-all-messages", (data) => {
-    socket.emit("receive_message", messages[data.roomID]);
+    socket.emit("receive_message", messages[data.roomId]);
   });
 
   // webrtc socket operations
   socket.on("send-offer", (data) => {
-    io.to(data.roomID).emit("receive-offer", data);
+    io.to(data.roomId).emit("receive-offer", data);
   });
 
   socket.on("send-answer", (data) => {
-    io.to(data.roomID).emit("receive-answer", data);
+    io.to(data.roomId).emit("receive-answer", data);
   });
 });
 
-io.listen(8000);
+io.listen(8000, {
+  host: "0.0.0.0",
+});
