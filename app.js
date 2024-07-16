@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const moment = require("moment-timezone");
 const http = require("http");
 const randomColor = require("randomcolor");
+const { wakeDyno } = require("heroku-keep-awake");
 
 const io = new Server({
   cors: {
@@ -246,4 +247,5 @@ server.on("request", (req, res) => {
 io.attach(server);
 server.listen(process.env.PORT || 8000, () => {
   console.log("Server listening on port 8000");
+  wakeDyno("https://video-party-server.onrender.com");
 });

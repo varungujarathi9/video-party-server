@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "express": "^4.19.2",
+    "heroku-keep-awake": "^1.1.2",
     "moment-timezone": "^0.5.45",
     "randomcolor": "^0.6.2",
     "socket-io": "^1.0.0",
